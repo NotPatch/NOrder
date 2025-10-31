@@ -1,0 +1,332 @@
+main-order-menu:
+  title: "&lOrder Menu"
+  size: 54
+  items:
+    filler:
+      slots: [0-8,9,17,18,26,27,35,36,44]
+      material: GRAY_STAINED_GLASS_PANE
+      name: " "
+      lore: []
+    new-order:
+      slot: 49
+      material: MAP
+      name: "&f&lCreate New Order"
+      lore:
+        - ""
+        - "&7Click to create a new order."
+        - ""
+      action: new-order
+    search-order:
+      slot: 48
+      material: OAK_SIGN
+      name: "&f&lSearch Orders"
+      lore:
+        - ""
+        - "&7Click to search existing orders."
+        - ""
+      action: search-order
+    your-orders:
+      slot: 50
+      material: CHEST
+      name: "&f&lYour Orders"
+      lore:
+        - ""
+        - "&7Click to view your orders."
+        - ""
+      action: your-orders
+    next-page:
+      slot: 53
+      material: ARROW
+      name: "&f&lNext Page"
+      lore:
+        - ""
+        - "&7Click to go to the next page."
+        - ""
+      action: next-page
+    previous-page:
+      slot: 45
+      material: ARROW
+      name: "&f&lPrevious Page"
+      lore:
+        - ""
+        - "&7Click to go to the previous page."
+        - ""
+      action: previous-page
+
+  order-item-template:
+    material: "%material%"
+    name: "&f%ordered_by%'s Order &7(%order_id%)"
+    lore:
+      - ""
+      - "&7Item: &f%item%"
+      - "&7Amount: &f%amount%"
+      - ""
+      - "&7Delivered: &f%delivered%"
+      - "&7Remaining: &f%remaining%"
+      - ""
+      - "&7Each: &f%price%"
+      - "&7Total: &f%total_price%"
+      - ""
+      - '&7%time_remaining%'
+      - ""
+      - "&7[%progress_bar%&7]"
+      - ""
+    action: view-order
+
+  order-slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43]
+
+  pagination:
+    items-per-page: 28
+    current-page: 1
+
+new-order-menu:
+  title: "&lCreate New Order"
+  size: 27
+  items:
+    select-item:
+      slot: 12
+      material: DIAMOND
+      name: "&bSelect Item"
+      lore:
+        - ""
+        - "&eClick to change"
+      action: set-item
+    set-quantity:
+      slot: 13
+      material: PAPER
+      name: "&eSet Quantity"
+      lore:
+        - ""
+        - "&7Total Items: &f%quantity%"
+        - ""
+        - "&eClick to change"
+      action: set-quantity
+    set-price:
+      slot: 14
+      material: EMERALD
+      name: "&aSet Price"
+      lore:
+        - ""
+        - "&7Price Per Item: &f%price%"
+        - "&7Total Price: &f%total_price%"
+        - ""
+        - "&eClick to change"
+      action: set-price
+    confirm:
+      slot: 16
+      material: LIME_STAINED_GLASS_PANE
+      name: "&2&lConfirm Order"
+      lore:
+        - ""
+        - "&7Selected Item: &f%item%"
+        - "&7Quantity: &f%quantity%"
+        - "&7Price Per Item: &f%price%"
+        - "&7Total Price: &f%total_price%"
+        - ""
+        - "&eClick to create order"
+      action: confirm-order
+    highlight:
+      slot: 10
+      material: GLOWSTONE
+      name: "&aHighlight order"
+      lore:
+        - ""
+        - "&7Your order will be highlighted"
+        - "&7in the main order menu."
+        - ""
+        - "&7Fee: &f2.5%"
+        - ""
+        - "&eClick to toggle"
+      action: toggle-highlight
+
+
+your-orders-menu:
+  title: "&lYour Orders"
+  size: 54
+  items:
+    filler:
+      slots: [0-8,9,17,18,26,27,35,36,44]
+      material: GRAY_STAINED_GLASS_PANE
+      name: " "
+      lore: []
+    back:
+      slot: 49
+      material: BARRIER
+      name: "&c&lBack to Main Menu"
+      lore:
+        - ""
+        - "&7Click to return to main menu"
+        - ""
+      action: back
+    next-page:
+      slot: 53
+      material: ARROW
+      name: "&f&lNext Page"
+      lore:
+        - ""
+        - "&7Click to go to the next page"
+        - ""
+      action: next-page
+    previous-page:
+      slot: 45
+      material: ARROW
+      name: "&f&lPrevious Page"
+      lore:
+        - ""
+        - "&7Click to go to the previous page"
+        - ""
+      action: previous-page
+
+  order-item-template:
+    material: "%material%"
+    name: "&7(%order_id%)"
+    lore:
+      - ""
+      - "&7Item: &f%item%"
+      - "&7Amount: &f%amount%"
+      - ""
+      - "&7Delivered: &f%delivered%"
+      - "&7Remaining: &f%remaining%"
+      - ""
+      - "&7Each: &f%price%"
+      - "&7Total: &f%total_price%"
+      - ""
+      - "&7[%progress_bar%&7]"
+      - ""
+      - '&7%time_remaining%'
+      - ""
+
+  order-slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+
+  pagination:
+    items-per-page: 21
+
+order-take-menu:
+  title: "&lTake Delivered Items"
+  size: 54
+  items:
+    filler:
+      slots: [0-8,9,17,18,26,27,35,36,44,45-53]
+      material: GRAY_STAINED_GLASS_PANE
+      name: " "
+      lore: []
+    back:
+      slot: 49
+      material: BARRIER
+      name: "&c&lBack"
+      lore:
+        - ""
+        - "&7Click to go back"
+        - ""
+      action: back
+    info:
+      slot: 4
+      material: PAPER
+      name: "&eInfo"
+      lore:
+        - ""
+        - "&7Left Click: &fTake item into inventory"
+        - "&7Q/Drop: &fDrop item"
+        - ""
+
+  delivery-slots: [10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29,30,31,32,33,34]
+
+item-select-menu:
+  title: "&lSelect Item"
+  size: 54
+  items:
+    filler:
+      slots: [0-8,9,17,18,26,27,35,36,44,45-53]
+      material: GRAY_STAINED_GLASS_PANE
+      name: " "
+      lore: []
+    search:
+      slot: 49
+      material: OAK_SIGN
+      name: "&f&lSearch Item"
+      lore:
+        - ""
+        - "&7Click to search for an item"
+        - ""
+      action: search-item
+    back:
+      slot: 45
+      material: BARRIER
+      name: "&c&lBack"
+      lore:
+        - ""
+        - "&7Click to go back"
+        - ""
+      action: back
+    next-page:
+      slot: 53
+      material: ARROW
+      name: "&f&lNext Page"
+      lore:
+        - ""
+        - "&7Click to go to the next page"
+        - ""
+      action: next-page
+    previous-page:
+      slot: 45
+      material: ARROW
+      name: "&f&lPrevious Page"
+      lore:
+        - ""
+        - "&7Click to go to the previous page"
+        - ""
+      action: previous-page
+    select-item-template:
+      material: "%material%"
+      name: "&f%item_name%"
+      lore:
+        - ""
+        - "&7Click to select this item"
+        - ""
+
+  item-slots: [10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29,30,31,32,33,34,37,38,39,40,41,42,43]
+  pagination:
+    items-per-page: 28
+
+enchant-select-menu:
+  title: "&lSelect Enchantments"
+  size: 54
+  items:
+    filler:
+      slots: [0-8,9,17,18,26,27,35,36,44,45-53]
+      material: GRAY_STAINED_GLASS_PANE
+      name: " "
+      lore: []
+    confirm:
+      slot: 49
+      material: LIME_STAINED_GLASS_PANE
+      name: "&a&lConfirm"
+      lore:
+        - ""
+        - "&7Click to confirm enchantments"
+        - ""
+      action: confirm-enchants
+    back:
+      slot: 45
+      material: BARRIER
+      name: "&c&lBack"
+      lore:
+        - ""
+        - "&7Click to go back"
+        - ""
+      action: back
+    enchant-item-template:
+      enchant: "%enchant%"
+      name: "&f%enchant_name%"
+      lore:
+        - ""
+        - "&fCurrent Level: &f%level%"
+        - "&fMax Level: &f%max_level%"
+        - ""
+        - "&7Left Click to increase level"
+        - "&7Right Click to decrease level"
+        - ""
+
+
+order-details-menu:
+  title: "&lPlace Order Items"

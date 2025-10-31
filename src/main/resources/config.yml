@@ -1,0 +1,90 @@
+database:
+  type: sqlite
+  host: localhost
+  port: 3306
+  database: norder
+  username: root
+  password: password123
+  pool-size: 10
+  minimum-idle: 5
+  keepalive-time: 600000
+  maximum-lifetime: 1800000
+  connection-timeout: 10000
+
+lang: en_US
+
+permissions:
+  order: norder.use
+  order-menu: norder.menu
+  order-admin: norder.admin
+  # norder.limit.<number> | default 5
+  order-limit: norder.limit
+  # norder.expiration.<number in days> | default 7
+  order-expiration: norder.expiration
+  use-highlight: norder.highlight
+date-format: "dd-MM HH:mm:ss"
+
+commands:
+  order:
+    aliases:
+      - norder
+      - "sipariş"
+  order-admin:
+    aliases:
+      - norderadmin
+      - "siparişadmin"
+
+settings:
+  highlight-fee: 2.5
+  send-webhooks: false
+
+number-format:
+  suffixes:
+    - ""
+    - "K"
+    - "M"
+    - "B"
+    - "T"
+  decimal-places: 1
+  # Examples:
+  # decilmalPlaces: 1 would format 1500 as 1.5K
+  # decimalPlaces: 2 would format 1500 as 1.50K
+  # decimalPlaces: 3 would format 1500 as 1.500K
+
+progress-bar:
+  length: 10
+  complete-symbol: "█"
+  incomplete-symbol: "░"
+  complete-color: "&a"
+  incomplete-color: "&7"
+
+blacklist-items:
+  - "BEDROCK"
+  - "COMMAND_BLOCK"
+  - "COMMAND_BLOCK_MINECART"
+  - "CHAIN_COMMAND_BLOCK"
+  - "REPEATING_COMMAND_BLOCK"
+  - "STRUCTURE_BLOCK"
+  - "STRUCTURE_VOID"
+  - "JIGSAW"
+  - "BARRIER"
+  - "LIGHT"
+  - "DEBUG_STICK"
+  - "KNOWLEDGE_BOOK"
+  - "SPAWNER"
+  - "END_PORTAL_FRAME"
+  - "END_PORTAL"
+  - "NETHER_PORTAL"
+  - "END_GATEWAY"
+  - "FROSTED_ICE"
+  - "INFESTED_STONE"
+  - "INFESTED_COBBLESTONE"
+  - "INFESTED_STONE_BRICKS"
+  - "INFESTED_MOSSY_STONE_BRICKS"
+  - "INFESTED_CRACKED_STONE_BRICKS"
+  - "INFESTED_CHISELED_STONE_BRICKS"
+  - "INFESTED_DEEPSLATE"
+  - "REINFORCED_DEEPSLATE"
+  - "PETRIFIED_OAK_SLAB"
+  - "FARMLAND"
+  - "BUDDING_AMETHYST"

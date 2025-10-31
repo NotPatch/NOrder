@@ -1,0 +1,31 @@
+webhooks:
+
+  order-create: # <----- ! DO NOT CHANGE THIS VALUE
+    url: ""
+    avatarURL: "https://example.com/avatar.png"
+    content: "A New Order!"
+    embeds:
+      0:
+        description: "%player%'s Order"
+        title: "%material%"
+        URL: "https://example.com"
+        footer:
+          text: ""
+          iconURL: "https://example.com/footer-icon.png"
+        fields:
+          - name: "Amount"
+            value: "%amount%"
+            inline: true
+          - name: "Price per Unit"
+            value: "%price%"
+            inline: true
+          - name: "Total Price"
+            value: "%total_price%"
+            inline: true
+          - name: "Enchants"
+            value: "%enchantments%"
+            inline: false
+          - name: "Duration"
+            value: "%duration%"
+            inline: true
+        color: "#00FF00"

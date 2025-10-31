@@ -1,0 +1,47 @@
+price-too-low: "&cThe price should be at least 1."
+not-enough-money: "&cYou do not have enough money to create this order."
+order-created: "&aOrder created, Item: %material%, Price: %price%, Quantity: %amount%, Total Price: %total_price%."
+no-permission: "&cYou do not have permission to use this."
+
+# Input Messages
+enter-item: "&aPlease type the item name:"
+enter-quantity: "&aPlease enter the quantity:"
+enter-price: "&aPlease enter the price per item:"
+input-timeout: "&cInput timed out! Please open the menu again."
+
+# Validation Messages
+invalid-item: "&cInvalid item name! Please try again."
+invalid-quantity: "&cInvalid quantity! Please enter a positive number."
+invalid-price: "&cInvalid price! Please enter a valid number."
+no-item-selected: "&cPlease select an item first."
+inventory-full: "&cYour inventory is full!"
+order-limit-reached: "&cYou have reached the maximum number of active orders (%limit%)."
+
+# Confirmation Messages
+item-selected: "&aSelected item: &f%item%"
+quantity-set: "&aQuantity set to: &f%quantity%"
+price-set: "&aPrice set to: &f%price%"
+
+# Order Delivery Messages
+delivery-success: "&aSuccessfully delivered &f%amount% &ax &f%material%&a!"
+delivery-earnings: "&aYou earned &f%amount%&a for this delivery!"
+delivery-completed: "&a✓ Your order %material% has been fully delivered!"
+delivery-wrong-item: "&cYou can only deliver &f%material% &cfor this order!"
+delivery-excess-items: "&7Returned &c%amount% &7excess items."
+
+# Order Owner Notifications
+order-progress: "&aYour order for &f%material% &ahas received a delivery of &f%amount% &aitems by &f%player%"
+order-completion: "&a&l✓ Your order for &f%material% &ahas been completed!"
+order-expiration: "&cYour order for &f%material% &chas expired!"
+
+# Time Format
+order-countdown-format: "%d Days %d Hours %d Minutes %d Seconds"
+
+# Admin Messages
+order-not-found: "&cOrder with ID %id% not found."
+order-info: "&aOrder ID: %id%, Item: %item%, Price: %price%, Quantity: %amount%, Owner: %buyer%, Created At: %created_at%, Status: %status%, Delivered: %delivered%/%amount%"
+order-deleted: "&aOrder ID %id% has been deleted."
+
+admin-usage-reload: "&7/orderadmin reload &8- &fReload plugin configurations"
+admin-usage-info: "&7/orderadmin info <id> &8- &fView detailed information about an order"
+admin-usage-delete: "&7/orderadmin delete <id> &8- &fDelete an order"

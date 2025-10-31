@@ -1,0 +1,330 @@
+package com.notpatch.nOrder.gui;
+
+import com.notpatch.nOrder.LanguageLoader;
+import com.notpatch.nOrder.NOrder;
+import com.notpatch.nOrder.Settings;
+import com.notpatch.nOrder.model.Order;
+import com.notpatch.nOrder.model.ProgressBar;
+import com.notpatch.nOrder.util.NumberFormatter;
+import com.notpatch.nlib.builder.ItemBuilder;
+import com.notpatch.nlib.effect.NSound;
+import com.notpatch.nlib.fastinv.FastInv;
+import com.notpatch.nlib.util.ColorUtil;
+import com.notpatch.nlib.util.NLogger;
+import lombok.Getter;
+import lombok.Setter;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+public class MainOrderMenu extends FastInv {
+
+    @Getter @Setter
+    private int currentPage = 1;
+    private final List<Integer> orderSlots;
+    private final int itemsPerPage;
+    private List<Order> filteredOrders;
+
+    public MainOrderMenu() {
+        this(1, NOrder.getInstance().getOrderManager().getHighlightedOrdersFirst());
+    }
+
+    public MainOrderMenu(List<Order> orders) {
+        this(1, orders);
+    }
+
+    public MainOrderMenu(int page, List<Order> orders) {
+        this(page, orders, null, null);
+    }
+
+    public MainOrderMenu(int page, List<Order> orders, String filterType, String filterValue) {
+        super(NOrder.getInstance().getConfigurationManager().getMenuConfiguration().getConfiguration().getInt("main-order-menu.size"),
+                ColorUtil.hexColor(NOrder.getInstance().getConfigurationManager().getMenuConfiguration().getConfiguration().getString("main-order-menu.title")));
+
+        NOrder main = NOrder.getInstance();
+        Configuration configuration = main.getConfigurationManager().getMenuConfiguration().getConfiguration();
+
+        this.currentPage = page;
+        this.itemsPerPage = configuration.getInt("main-order-menu.pagination.items-per-page", 21);
+
+        if (filterType != null && filterValue != null) {
+            this.filteredOrders = filterOrders(orders, filterType, filterValue);
+        } else {
+            this.filteredOrders = orders;
+        }
+
+        List<String> slotsStrList = configuration.getStringList("main-order-menu.order-slots");
+        if (slotsStrList.isEmpty()) {
+            String slotsStr = configuration.getString("main-order-menu.order-slots");
+            this.orderSlots = parseSlots(slotsStr);
+        } else {
+            this.orderSlots = new ArrayList<>();
+            for (String slotStr : slotsStrList) {
+                try {
+                    this.orderSlots.add(Integer.parseInt(slotStr));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+
+        loadMenuItems(configuration);
+        loadOrderItems(main, this.filteredOrders);
+    }
+
+    private List<Order> filterOrders(List<Order> orders, String filterType, String filterValue) {
+        return switch (filterType.toLowerCase()) {
+            case "item" -> orders.stream()
+                    .filter(order -> order.getMaterial().name().toLowerCase()
+                            .contains(filterValue.toLowerCase()))
+                    .toList();
+            case "player" -> orders.stream()
+                    .filter(order -> order.getPlayerName().toLowerCase()
+                            .contains(filterValue.toLowerCase()))
+                    .toList();
+            default -> orders;
+        };
+    }
+
+    private void loadMenuItems(Configuration configuration) {
+        ConfigurationSection itemsSection = configuration.getConfigurationSection("main-order-menu.items");
+
+        if (itemsSection != null) {
+            for (String key : itemsSection.getKeys(false)) {
+                ConfigurationSection itemSection = itemsSection.getConfigurationSection(key);
+
+                if (itemSection != null) {
+                    ItemStack item = ItemBuilder.getItemFromSection(itemSection);
+                    String action = itemSection.getString("action");
+
+                    if (itemSection.contains("slot")) {
+                        int slot = itemSection.getInt("slot");
+                        setItem(slot, item, e -> {
+                            if (action != null) {
+                                handleMenuAction(action, e.getWhoClicked());
+                            }
+                        });
+                    } else if (itemSection.contains("slots")) {
+                        List<Integer> slots = parseSlots(itemSection.getString("slots"));
+                        for (int slot : slots) {
+                            setItem(slot, item, e -> {
+                                if (action != null) {
+                                    handleMenuAction(action, e.getWhoClicked());
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void loadOrderItems(NOrder plugin, List<Order> orders) {
+        List<Order> allOrders = orders;
+
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int endIndex = Math.min(startIndex + itemsPerPage, allOrders.size());
+
+        if (startIndex >= allOrders.size() && !allOrders.isEmpty()) {
+            currentPage = 1;
+            startIndex = 0;
+            endIndex = Math.min(itemsPerPage, allOrders.size());
+        }
+
+        List<Order> pageOrders = (startIndex < allOrders.size()) ?
+                allOrders.subList(startIndex, endIndex) : new ArrayList<>();
+
+        Configuration config = plugin.getConfigurationManager().getMenuConfiguration().getConfiguration();
+        ConfigurationSection template = config.getConfigurationSection("main-order-menu.order-item-template");
+
+        if (template != null) {
+            for (int i = 0; i < pageOrders.size(); i++) {
+                if (i >= orderSlots.size()) break;
+
+                Order order = pageOrders.get(i);
+                int slot = orderSlots.get(i);
+
+                ItemStack orderItem = createOrderItem(order, template);
+
+                setItem(slot, orderItem, e -> {
+                    handleOrderClick(order, e.getWhoClicked());
+                });
+            }
+        }
+
+    }
+
+    private ItemStack createOrderItem(Order order, ConfigurationSection template) {
+        String materialStr = template.getString("material", "PAPER");
+        if (materialStr.equals("%material%")) {
+            materialStr = order.getMaterial().name();
+        }
+
+        Material material;
+        try {
+            material = Material.valueOf(materialStr);
+        } catch (IllegalArgumentException e) {
+            material = Material.PAPER;
+        }
+        
+        ItemStack itemStack = order.getItem();
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
+        if(itemStack != null){
+            ItemMeta meta = itemStack.getItemMeta();
+            if(meta != null){
+                enchantments = meta.getEnchants();
+            }
+        }
+
+        String nameTemplate = template.getString("name", "&f&lSipariş");
+        String name = replaceOrderPlaceholders(nameTemplate, order);
+
+        List<String> loreTemplate = template.getStringList("lore");
+        List<String> lore = new ArrayList<>();
+
+        for (String line : loreTemplate) {
+            lore.add(replaceOrderPlaceholders(line, order));
+        }
+
+        return ItemBuilder.builder()
+                .material(material)
+                .displayName(ColorUtil.hexColor(name))
+                .glow(order.isHighlight())
+                .enchantments(enchantments)
+                .lore(lore.stream().map(ColorUtil::hexColor).toList())
+                .build().build();
+    }
+
+    private String replaceOrderPlaceholders(String text, Order order) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Settings.DATE_FORMAT);
+        String countdown = "";
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expireAt = order.getExpirationDate();
+        if (now.isBefore(expireAt)) {
+            Duration duration = Duration.between(now, expireAt);
+            long days = duration.toDays();
+            long hours = duration.toHours() % 24;
+            long minutes = duration.toMinutes() % 60;
+            long seconds = duration.getSeconds() % 60;
+            countdown = String.format(LanguageLoader.getMessage("order-countdown-format"), days, hours, minutes, seconds);
+        }
+
+        return text
+                .replace("%item%", order.getMaterial().name())
+                .replace("%material%", order.getMaterial().name())
+                .replace("%quantity%", String.valueOf(order.getAmount()))
+                .replace("%amount%", String.valueOf(order.getAmount()))
+                .replace("%delivered%", String.valueOf(order.getDelivered()))
+                .replace("%remaining%", String.valueOf(order.getRemaining()))
+                .replace("%price%", NumberFormatter.format(order.getPrice()))
+                .replace("%total_price%", NumberFormatter.format(order.getPrice() * order.getAmount()))
+                .replace("%created_at%", order.getCreatedAt().format(formatter))
+                .replace("%expire_at%", order.getExpirationDate().format(formatter))
+                .replace("%order_id%", order.getId())
+                .replace("%time_remaining%", countdown)
+                .replace("%progress_bar%", new ProgressBar(order).render())
+                .replace("%ordered_by%", order.getPlayerName());
+    }
+
+    private void handleOrderClick(Order order, HumanEntity player) {
+        player.closeInventory();
+        if(order.getPlayerId() == player.getUniqueId() || order.getPlayerName().equalsIgnoreCase(player.getName())){
+            Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                new OrderTakeMenu(order).open((Player) player);
+            });
+            return;
+        }
+        Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+            new OrderDetailsMenu(order).open((Player) player);
+        });
+    }
+
+
+    private List<Integer> parseSlots(String slotsString) {
+        List<Integer> slots = new ArrayList<>();
+
+        if (slotsString == null) return slots;
+
+        slotsString = slotsString.replace("[", "").replace("]", "");
+        String[] parts = slotsString.split(",");
+
+        for (String part : parts) {
+            part = part.trim();
+
+            if (part.contains("-")) {
+                String[] range = part.split("-");
+                int start = Integer.parseInt(range[0].trim());
+                int end = Integer.parseInt(range[1].trim());
+
+                for (int i = start; i <= end; i++) {
+                    slots.add(i);
+                }
+            } else {
+                slots.add(Integer.parseInt(part));
+            }
+        }
+
+        return slots;
+    }
+
+    private void handleMenuAction(String action, HumanEntity player) {
+        switch (action) {
+            case "new-order" -> {
+                player.closeInventory();
+                Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                    new NewOrderMenu().open((Player) player);
+                });
+            }
+            case "search-order" -> {
+                player.closeInventory();
+                player.sendMessage(LanguageLoader.getMessage("enter-item"));
+                NOrder.getInstance().getChatInputManager().setAwaitingInput((Player) player, searchValue -> {
+                    Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                        new MainOrderMenu(1, NOrder.getInstance().getOrderManager().getHighlightedOrdersFirst(),
+                                "item", searchValue).open((Player) player);
+                    });
+                });
+            }
+            case "your-orders" -> {
+                player.closeInventory();
+                Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                    new YourOrdersMenu((Player) player).open((Player) player);
+                });
+            }
+            case "next-page" -> {
+                if (currentPage < Math.ceil((double) filteredOrders.size() / itemsPerPage)) {
+                    player.closeInventory();
+                    Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                        new MainOrderMenu(currentPage + 1, filteredOrders).open((Player) player);
+                    });
+                }
+            }
+            case "previous-page" -> {
+                if (currentPage > 1) {
+                    player.closeInventory();
+                    Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                        new MainOrderMenu(currentPage - 1, filteredOrders).open((Player) player);
+                    });
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        NSound.click(player);
+    }
+}

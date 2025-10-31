@@ -1,0 +1,14 @@
+name: NOrder
+version: ${project.version}
+main: com.notpatch.nOrder.NOrder
+api-version: '1.21'
+loader: com.notpatch.nOrder.LibraryLoader
+
+dependencies:
+  server:
+    Vault:
+      load: BEFORE
+      required: true
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
