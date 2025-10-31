@@ -9,8 +9,6 @@ import com.notpatch.nOrder.listener.ChatInputListener;
 import com.notpatch.nOrder.manager.*;
 import com.notpatch.nlib.NLib;
 import com.notpatch.nlib.compatibility.NCompatibility;
-import com.notpatch.nlib.economy.impl.VaultEconomy;
-import com.notpatch.nlib.util.NLogger;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;

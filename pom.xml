@@ -98,7 +98,7 @@
         <dependency>
             <groupId>com.github.notpatch</groupId>
             <artifactId>NLib</artifactId>
-            <version>1.4.2</version>
+            <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
