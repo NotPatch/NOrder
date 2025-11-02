@@ -99,7 +99,7 @@ blacklist-items:
 | `norder.use` | Allows using the order system | op |
 | `norder.menu` | Allows opening the order menu | op |
 | `norder.admin` | Allows using admin commands | op |
-| `norder.highlight` | Allows highlighting orders | op |
+| `norder.highlight` | Allows highlighting orders | `norder.highlight` |
 | `norder.limit.<number>` | Sets max active orders (e.g., `norder.limit.10`) | 5 |
 | `norder.expiration.<days>` | Sets order expiration in days (e.g., `norder.expiration.14`) | 7 |
 
@@ -136,17 +136,31 @@ The total cost will be deducted from your balance when the order is created.
 
 If PlaceholderAPI is installed, you can use these placeholders:
 
-- `%norder_active_orders%` - Number of active orders for the player
-- `%norder_total_delivered%` - Total items delivered by the player
-- `%norder_total_earnings%` - Total money earned from deliveries
+- `%norder_orders_total%` - Number of total orders
+
+Spesific order placeholders
+- `%norder_order_<id>_<>`
+
+- `%norder_order_<id>_material%`
+- `%norder_order_<id>_amount%`
+- `%norder_order_<id>_price%`
+- `%norder_order_<id>_buyer%`
+- `%norder_order_<id>_status%`
+- `%norder_order_<id>_createDate%`
+- `%norder_order_<id>_expirationDate%`
+
+Spesific player placeholders
+- `%norder_player_<player>_<>`
+
+- `%norder_player_<player>_totalOrders%`
+- `%norder_player_<player>_totalEarnings%`
+- `%norder_player_<player>_totalDelivered%`
+- `%norder_player_<player>_totalCollected%`
 
 ## Discord Webhooks
 
 Configure webhooks in `webhooks.yml` to receive notifications about:
 - New orders created
-- Orders completed
-- Orders expired
-- Large deliveries
 
 ## Multi-Language Support
 
