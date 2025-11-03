@@ -72,7 +72,8 @@ public class LanguageLoader {
 
     public String get(String path) {
         String value = translationMap.getOrDefault(path, "Translation not found for path: " + path);
-        value = PlaceholderAPI.setPlaceholders(null, value);
+        if (main.getServer().getPluginManager().getPlugin("PlaceholderAPI") != null)
+            value = PlaceholderAPI.setPlaceholders(null, value);
         return ColorUtil.hexColor(value);
     }
 
