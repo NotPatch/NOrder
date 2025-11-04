@@ -2,10 +2,8 @@ package com.notpatch.nOrder.gui;
 
 import com.notpatch.nOrder.LanguageLoader;
 import com.notpatch.nOrder.NOrder;
-import com.notpatch.nOrder.Settings;
 import com.notpatch.nOrder.model.Order;
-import com.notpatch.nOrder.model.ProgressBar;
-import com.notpatch.nOrder.util.NumberFormatter;
+import com.notpatch.nOrder.util.StringUtil;
 import com.notpatch.nlib.builder.ItemBuilder;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.fastinv.FastInv;
@@ -23,9 +21,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -193,13 +188,13 @@ public class MainOrderMenu extends FastInv {
         }
 
         String nameTemplate = template.getString("name", "&f&lSipariş");
-        String name = replaceOrderPlaceholders(nameTemplate, order);
+        String name = StringUtil.replaceOrderPlaceholders(nameTemplate, order);
 
         List<String> loreTemplate = template.getStringList("lore");
         List<String> lore = new ArrayList<>();
 
         for (String line : loreTemplate) {
-            lore.add(replaceOrderPlaceholders(line, order));
+            lore.add(StringUtil.replaceOrderPlaceholders(line, order));
         }
 
         return ItemBuilder.builder()
@@ -211,36 +206,7 @@ public class MainOrderMenu extends FastInv {
                 .build().build();
     }
 
-    private String replaceOrderPlaceholders(String text, Order order) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Settings.DATE_FORMAT);
-        String countdown = "";
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expireAt = order.getExpirationDate();
-        if (now.isBefore(expireAt)) {
-            Duration duration = Duration.between(now, expireAt);
-            long days = duration.toDays();
-            long hours = duration.toHours() % 24;
-            long minutes = duration.toMinutes() % 60;
-            long seconds = duration.getSeconds() % 60;
-            countdown = String.format(LanguageLoader.getMessage("order-countdown-format"), days, hours, minutes, seconds);
-        }
 
-        return text
-                .replace("%item%", order.getMaterial().name())
-                .replace("%material%", order.getMaterial().name())
-                .replace("%quantity%", String.valueOf(order.getAmount()))
-                .replace("%amount%", String.valueOf(order.getAmount()))
-                .replace("%delivered%", String.valueOf(order.getDelivered()))
-                .replace("%remaining%", String.valueOf(order.getRemaining()))
-                .replace("%price%", NumberFormatter.format(order.getPrice()))
-                .replace("%total_price%", NumberFormatter.format(order.getPrice() * order.getAmount()))
-                .replace("%created_at%", order.getCreatedAt().format(formatter))
-                .replace("%expire_at%", order.getExpirationDate().format(formatter))
-                .replace("%order_id%", order.getId())
-                .replace("%time_remaining%", countdown)
-                .replace("%progress_bar%", new ProgressBar(order).render())
-                .replace("%ordered_by%", order.getPlayerName());
-    }
 
     private void handleOrderClick(Order order, HumanEntity player) {
         player.closeInventory();
