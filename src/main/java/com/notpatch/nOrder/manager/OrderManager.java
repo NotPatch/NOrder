@@ -7,6 +7,7 @@ import com.notpatch.nOrder.model.DiscordWebhook;
 import com.notpatch.nOrder.model.Order;
 import com.notpatch.nOrder.model.OrderStatus;
 import com.notpatch.nOrder.util.PlayerUtil;
+import com.notpatch.nOrder.util.StringUtil;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.util.NLogger;
 import org.bukkit.Material;
@@ -361,11 +362,15 @@ public class OrderManager {
         double refundAmount = (order.getAmount() - order.getDelivered()) * order.getPrice();
         main.getEconomy().depositPlayer(offlinePlayer, refundAmount);
         removeOrder(order);
-        player.sendMessage(LanguageLoader.getMessage("order-cancelled")
-                .replace("%material%", order.getMaterial().name())
-                .replace("%amount%", String.valueOf(order.getAmount() - order.getDelivered()))
-                .replace("%refund_amount%", String.format("%.2f", refundAmount)));
-        NSound.success(player);
+        if (player.isOnline()) {
+            player.sendMessage(LanguageLoader.getMessage("order-cancelled")
+                    .replace("%id%", order.getId())
+                    .replace("%material%", StringUtil.formatMaterialName(order.getMaterial()))
+                    .replace("%amount%", String.valueOf(order.getAmount() - order.getDelivered()))
+                    .replace("%refund_amount%", String.format("%.2f", refundAmount)));
+            NSound.success(player);
+        }
+
     }
 
     public boolean removeOrder(Order order) {

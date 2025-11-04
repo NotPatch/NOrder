@@ -9,12 +9,15 @@ import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
@@ -59,14 +62,53 @@ public class OrderDetailsMenu extends FastInv {
 
         for (int i = 0; i < getInventory().getSize(); i++) {
             ItemStack item = getInventory().getItem(i);
+            if (item == null || item.getType().isAir()) continue;
 
-            if (item != null && !item.getType().isAir()) {
+            if (item.getType() == Material.SHULKER_BOX) {
+                if (!(item.getItemMeta() instanceof BlockStateMeta)) {
+                    invalidItems.add(item.clone());
+                    getInventory().clear(i);
+                    continue;
+                }
+
+                BlockStateMeta blockStateMeta = (BlockStateMeta) item.getItemMeta();
+                if (!(blockStateMeta.getBlockState() instanceof ShulkerBox)) {
+                    invalidItems.add(item.clone());
+                    getInventory().clear(i);
+                    continue;
+                }
+
+                ShulkerBox shulkerBox = (ShulkerBox) blockStateMeta.getBlockState();
+                List<ItemStack> nonMatching = new ArrayList<>();
+
+                for (ItemStack shulkerItem : shulkerBox.getInventory().getContents()) {
+                    if (shulkerItem == null || shulkerItem.getType().isAir()) continue;
+                    if (isSameItem(shulkerItem, order.getItem())) {
+                        validItems.add(shulkerItem.clone());
+                    } else {
+                        nonMatching.add(shulkerItem.clone());
+                    }
+                }
+
+                ItemStack returnedShulker = item.clone();
+                BlockStateMeta retMeta = (BlockStateMeta) returnedShulker.getItemMeta();
+                ShulkerBox returnedBox = (ShulkerBox) retMeta.getBlockState();
+                returnedBox.getInventory().clear();
+                for (int idx = 0; idx < nonMatching.size(); idx++) {
+                    returnedBox.getInventory().setItem(idx, nonMatching.get(idx));
+                }
+                retMeta.setBlockState(returnedBox);
+                returnedShulker.setItemMeta(retMeta);
+
+                invalidItems.add(returnedShulker);
+
+                getInventory().clear(i);
+            } else {
                 if (isSameItem(item, order.getItem())) {
                     validItems.add(item.clone());
                 } else {
                     invalidItems.add(item.clone());
                 }
-
                 getInventory().clear(i);
             }
         }
