@@ -2,11 +2,9 @@ package com.notpatch.nOrder.gui;
 
 import com.notpatch.nOrder.LanguageLoader;
 import com.notpatch.nOrder.NOrder;
-import com.notpatch.nOrder.Settings;
 import com.notpatch.nOrder.model.Order;
 import com.notpatch.nOrder.model.OrderStatus;
-import com.notpatch.nOrder.model.ProgressBar;
-import com.notpatch.nOrder.util.NumberFormatter;
+import com.notpatch.nOrder.util.StringUtil;
 import com.notpatch.nlib.builder.ItemBuilder;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.fastinv.FastInv;
@@ -19,12 +17,10 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,7 +124,7 @@ public class YourOrdersMenu extends FastInv {
                 ItemStack orderItem = createOrderItem(order, template);
 
                 setItem(slot, orderItem, e -> {
-                    handleOrderClick(order, e.getWhoClicked());
+                    handleOrderClick(order, e.getWhoClicked(), e);
                 });
             }
         }
@@ -141,13 +137,13 @@ public class YourOrdersMenu extends FastInv {
         Material material = Material.valueOf(materialStr.replace("%material%", order.getMaterial().name()));
 
         String nameTemplate = template.getString("name", "&f&lSipariş");
-        String name = replaceOrderPlaceholders(nameTemplate, order);
+        String name = StringUtil.replaceOrderPlaceholders(nameTemplate, order);
 
         List<String> loreTemplate = template.getStringList("lore");
         List<String> lore = new ArrayList<>();
 
         for (String line : loreTemplate) {
-            lore.add(replaceOrderPlaceholders(line, order));
+            lore.add(StringUtil.replaceOrderPlaceholders(line, order));
         }
 
         return ItemBuilder.builder()
@@ -157,44 +153,29 @@ public class YourOrdersMenu extends FastInv {
                 .build().build();
     }
 
-    private String replaceOrderPlaceholders(String text, Order order) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Settings.DATE_FORMAT);
-        String countdown = "";
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expireAt = order.getExpirationDate();
-        if (now.isBefore(expireAt)) {
-            Duration duration = Duration.between(now, expireAt);
-            long days = duration.toDays();
-            long hours = duration.toHours() % 24;
-            long minutes = duration.toMinutes() % 60;
-            long seconds = duration.getSeconds() % 60;
-            countdown = String.format(LanguageLoader.getMessage("order-countdown-format"), days, hours, minutes, seconds);
-        }
 
-        return text
-                .replace("%item%", order.getMaterial().name())
-                .replace("%material%", order.getMaterial().name())
-                .replace("%quantity%", String.valueOf(order.getAmount()))
-                .replace("%amount%", String.valueOf(order.getAmount()))
-                .replace("%delivered%", String.valueOf(order.getDelivered()))
-                .replace("%remaining%", String.valueOf(order.getRemaining()))
-                .replace("%price%", NumberFormatter.format(order.getPrice()))
-                .replace("%total_price%", NumberFormatter.format(order.getPrice() * order.getAmount()))
-                .replace("%created_at%", order.getCreatedAt().format(formatter))
-                .replace("%expire_at%", order.getExpirationDate().format(formatter))
-                .replace("%order_id%", order.getId())
-                .replace("%progress_bar%", new ProgressBar(order).render())
-                .replace("%time_remaining%", countdown)
-                .replace("%ordered_by%", order.getPlayerName());
-    }
-
-    private void handleOrderClick(Order order, HumanEntity player) {
+    private void handleOrderClick(Order order, HumanEntity player, InventoryClickEvent event) {
         if (order.getStatus() == OrderStatus.ARCHIVED)
             return;
         player.closeInventory();
+        if (event.getClick() == ClickType.SHIFT_RIGHT) {
+            player.sendMessage(LanguageLoader.getMessage("enter-confirm"));
+            main.getChatInputManager().setAwaitingInput((Player) player, value -> {
+                processRemoveOrder(((Player) player).getPlayer(), value, order);
+            });
+            return;
+        }
         Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
             new OrderTakeMenu(order).open((Player) player);
         });
+    }
+
+    private void processRemoveOrder(Player player, String input, Order order) {
+        if (input.equalsIgnoreCase("confirm")) {
+            main.getOrderManager().cancelOrder(order);
+        } else {
+            main.getChatInputManager().cancelInput(player);
+        }
     }
 
     private void updatePaginationButtons(int totalOrders) {
