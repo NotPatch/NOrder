@@ -8,6 +8,7 @@ enter-item: "&aLütfen ürün adını yazın:"
 enter-quantity: "&aLütfen miktarı girin:"
 enter-price: "&aLütfen birim fiyatı girin:"
 input-timeout: "&cGiriş süresi doldu! Lütfen menüyü tekrar açın."
+enter-confirm: "&cSiparişi kaldırmak için lütfen &fconfirm &cyazın."
 
 # Validation Messages
 invalid-item: "&cGeçersiz ürün adı! Lütfen tekrar deneyin."
@@ -33,6 +34,7 @@ delivery-excess-items: "&7Fazla &c%amount% &7eşya geri verildi."
 order-progress: "&a%player% tarafından &f%amount% &aadet &f%material% teslim edildi, siparişiniz güncellendi."
 order-completion: "&a&l✓ %material% siparişiniz tamamlandı!"
 order-expiration: "&c%material% siparişinizin süresi doldu!"
+order-cancelled: "&c%id% siparişiniz iptal edildi!"
 
 # Time Format
 order-countdown-format: "%d Gün %d Saat %d Dakika %d Saniye"

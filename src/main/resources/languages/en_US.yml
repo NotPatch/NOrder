@@ -7,6 +7,7 @@ no-permission: "&cYou do not have permission to use this."
 enter-item: "&aPlease type the item name:"
 enter-quantity: "&aPlease enter the quantity:"
 enter-price: "&aPlease enter the price per item:"
+enter-confirm: "&cPlease type &fconfirm &cto remove the order."
 input-timeout: "&cInput timed out! Please open the menu again."
 
 # Validation Messages
@@ -33,6 +34,7 @@ delivery-excess-items: "&7Returned &c%amount% &7excess items."
 order-progress: "&aYour order for &f%material% &ahas received a delivery of &f%amount% &aitems by &f%player%"
 order-completion: "&a&l✓ Your order for &f%material% &ahas been completed!"
 order-expiration: "&cYour order for &f%material% &chas expired!"
+order-cancelled: "&cYour order &f%id% &chas been cancelled!"
 
 # Time Format
 order-countdown-format: "%d Days %d Hours %d Minutes %d Seconds"
