@@ -14,6 +14,7 @@ import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import space.arim.morepaperlib.MorePaperLib;
 
 public final class NOrder extends JavaPlugin {
 
@@ -47,11 +48,16 @@ public final class NOrder extends JavaPlugin {
     @Getter
     private Metrics metrics;
 
+    @Getter
+    private MorePaperLib morePaperLib;
+
     @Override
     public void onEnable() {
         instance = this;
 
         NLib.initialize(this);
+
+        morePaperLib = new MorePaperLib(this);
 
         saveDefaultConfig();
         saveConfig();
@@ -60,8 +66,8 @@ public final class NOrder extends JavaPlugin {
 
         NCompatibility compatibility = new NCompatibility();
         compatibility.
-                checkBukkit("Paper", "Purpur")
-                .checkVersion("1.21.4", "1.21.10")
+                checkBukkit("Paper", "Purpur", "Leaf", "Folia")
+                .checkVersion("1.19", "1.21.10")
                 .checkPlugin("PlaceholderAPI", false)
                 .onSuccess(() -> {
                     new PlaceholderHook(this).register();
@@ -126,7 +132,8 @@ public final class NOrder extends JavaPlugin {
         if (playerStatsManager != null) playerStatsManager.saveStatistics();
         if (databaseManager != null) databaseManager.disconnect();
         if (configurationManager != null) configurationManager.saveConfigurations();
-        metrics.shutdown();
+        if (morePaperLib != null) morePaperLib.scheduling().cancelGlobalTasks();
+        if (metrics != null) metrics.shutdown();
     }
 
 }
