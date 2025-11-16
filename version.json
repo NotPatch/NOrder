@@ -1,5 +1,5 @@
 {
-  "version": "1.2.1",
-  "message": "Added UpdateChecker, bStats",
+  "version": "1.2.2",
+  "message": "Added Folia Support",
   "critical": false
 }
