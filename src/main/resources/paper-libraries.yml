@@ -1,4 +1,4 @@
 libraries:
-  - 'com.github.notpatch:NLib:1.4.2'
+  - 'com.github.notpatch:NLib:1.4.3'
   - 'com.zaxxer:HikariCP:6.3.0'
   - 'org.json:json:20250517'
