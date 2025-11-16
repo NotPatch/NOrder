@@ -67,7 +67,7 @@ public final class NOrder extends JavaPlugin {
         NCompatibility compatibility = new NCompatibility();
         compatibility.
                 checkBukkit("Paper", "Purpur", "Leaf", "Folia")
-                .checkVersion("1.19", "1.21.10")
+                .checkVersion("1.21.4", "1.21.10")
                 .checkPlugin("PlaceholderAPI", false)
                 .onSuccess(() -> {
                     new PlaceholderHook(this).register();
