@@ -7,7 +7,6 @@ import com.notpatch.nlib.builder.ItemBuilder;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -199,7 +198,7 @@ public class ItemSelectMenu extends FastInv {
                 player.sendMessage(LanguageLoader.getMessage("enter-item"));
                 main.getChatInputManager().setAwaitingInput(player, input -> {
                     searchQuery = input;
-                    Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                    main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
                         updateItems();
                         this.open(player);
                     });

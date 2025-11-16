@@ -1,11 +1,8 @@
 package com.notpatch.nOrder;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 
-import java.text.DateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,14 +56,15 @@ public class Settings {
                 .filter(Objects::nonNull)
                 .toList();
 
-        Bukkit.getScheduler().runTaskAsynchronously(NOrder.getInstance(), () -> {
+        NOrder.getInstance().getMorePaperLib().scheduling().asyncScheduler().run(() -> {
             List<Material> items = Arrays.stream(Material.values())
                     .filter(m -> !m.isAir() && m.isItem() && !m.isLegacy())
                     .filter(m -> !blacklist.contains(m))
                     .collect(Collectors.toList());
 
-            Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> availableItems = items);
+            NOrder.getInstance().getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> availableItems = items);
         });
+
         PROGRESS_BAR_LENGTH = config.getInt("progress-bar.length", 20);
         PROGRESS_BAR_COMPLETE_CHAR = config.getString("progress-bar.complete-char", "█").charAt(0);
         PROGRESS_BAR_INCOMPLETE_CHAR = config.getString("progress-bar.incomplete-char", "░").charAt(0);

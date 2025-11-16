@@ -11,7 +11,6 @@ import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -165,7 +164,7 @@ public class YourOrdersMenu extends FastInv {
             });
             return;
         }
-        Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+        main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
             new OrderTakeMenu(order).open((Player) player);
         });
     }
@@ -234,7 +233,7 @@ public class YourOrdersMenu extends FastInv {
         switch (action) {
             case "back":
                 player.closeInventory();
-                Bukkit.getScheduler().runTask(main, () -> {
+                main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
                     new MainOrderMenu().open((Player) player);
                 });
                 break;

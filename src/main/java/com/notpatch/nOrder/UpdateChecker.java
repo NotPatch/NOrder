@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import com.notpatch.nlib.util.NLogger;
 import lombok.Data;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -24,7 +23,7 @@ public class UpdateChecker {
     public CompletableFuture<UpdateInfo> checkUpdates() {
         CompletableFuture<UpdateInfo> future = new CompletableFuture<>();
 
-        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+        main.getMorePaperLib().scheduling().asyncScheduler().run(() -> {
             try {
                 URL url = new URL("https://raw.githubusercontent.com/NotPatch/NOrder/refs/heads/master/version.json");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -78,11 +77,14 @@ public class UpdateChecker {
                 future.completeExceptionally(e);
                 NLogger.warn("Failed to check for updates: " + e.getMessage());
             }
+
         });
+
         return future.thenApply(updateInfo -> {
             sendUpdateNotification(updateInfo);
             return updateInfo;
         });
+
     }
 
     private void sendUpdateNotification(UpdateInfo updateInfo) {

@@ -41,7 +41,7 @@ public class OrderDetailsMenu extends FastInv {
         main = NOrder.getInstance();
         this.order = order;
 
-        Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+        main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
             for (int i = 0; i < getInventory().getSize(); i++) {
                 getInventory().clear(i);
             }

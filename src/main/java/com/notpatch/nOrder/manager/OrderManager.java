@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 import java.io.IOException;
 import java.sql.*;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -480,10 +481,11 @@ public class OrderManager {
     }
 
     public void startCleanupTask() {
-        main.getServer().getScheduler().runTaskTimerAsynchronously(main,
+        main.getMorePaperLib().scheduling().asyncScheduler().runAtFixedRate(
                 this::cleanExpiredOrders,
-                20 * 60 * 10,
-                20 * 60 * 10
+                Duration.ofMinutes(10),
+
+                Duration.ofMinutes(10)
         );
     }
 

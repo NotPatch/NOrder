@@ -277,10 +277,11 @@ public class NewOrderMenu extends FastInv implements Listener {
                     return;
                 }
                 setHighlighted(!isHighlighted());
-                Bukkit.getScheduler().runTaskLater(main, () -> {
+                main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
                     updateMenuItems();
                     this.open(player);
-                }, 5L);
+                });
+
             }
 
             case "confirm-order" -> {
@@ -329,7 +330,7 @@ public class NewOrderMenu extends FastInv implements Listener {
             player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("quantity-set")
                     .replace("%quantity%", String.valueOf(amount))));
 
-            Bukkit.getScheduler().runTaskLater(main, () -> {
+            main.getMorePaperLib().scheduling().globalRegionalScheduler().runDelayed(() -> {
                 updateMenuItems();
                 this.open(player);
             }, 5L);
@@ -354,7 +355,7 @@ public class NewOrderMenu extends FastInv implements Listener {
             player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("price-set")
                     .replace("%price%", String.valueOf(price))));
 
-            Bukkit.getScheduler().runTaskLater(main, () -> {
+            main.getMorePaperLib().scheduling().globalRegionalScheduler().runDelayed(() -> {
                 updateMenuItems();
                 this.open(player);
             }, 5L);

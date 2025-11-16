@@ -10,7 +10,6 @@ import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -211,12 +210,13 @@ public class MainOrderMenu extends FastInv {
     private void handleOrderClick(Order order, HumanEntity player) {
         player.closeInventory();
         if (order.getPlayerId() == player.getUniqueId() || order.getPlayerName().equalsIgnoreCase(player.getName())) {
-            Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+            main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
                 new OrderTakeMenu(order).open((Player) player);
             });
+
             return;
         }
-        Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+        main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
             new OrderDetailsMenu(order).open((Player) player);
         });
     }
@@ -253,7 +253,7 @@ public class MainOrderMenu extends FastInv {
         switch (action) {
             case "new-order" -> {
                 player.closeInventory();
-                Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
                     new NewOrderMenu().open((Player) player);
                 });
             }
@@ -261,7 +261,7 @@ public class MainOrderMenu extends FastInv {
                 player.closeInventory();
                 player.sendMessage(LanguageLoader.getMessage("enter-item"));
                 main.getChatInputManager().setAwaitingInput((Player) player, searchValue -> {
-                    Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                    main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
                         new MainOrderMenu(1, main.getOrderManager().getHighlightedOrdersFirst(),
                                 "item", searchValue).open((Player) player);
                     });
@@ -269,14 +269,14 @@ public class MainOrderMenu extends FastInv {
             }
             case "your-orders" -> {
                 player.closeInventory();
-                Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
                     new YourOrdersMenu((Player) player).open((Player) player);
                 });
             }
             case "next-page" -> {
                 if (currentPage < Math.ceil((double) filteredOrders.size() / itemsPerPage)) {
                     player.closeInventory();
-                    Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                    main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
                         new MainOrderMenu(currentPage + 1, filteredOrders).open((Player) player);
                     });
                 }
@@ -284,7 +284,7 @@ public class MainOrderMenu extends FastInv {
             case "previous-page" -> {
                 if (currentPage > 1) {
                     player.closeInventory();
-                    Bukkit.getScheduler().runTask(NOrder.getInstance(), () -> {
+                    main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
                         new MainOrderMenu(currentPage - 1, filteredOrders).open((Player) player);
                     });
                 }

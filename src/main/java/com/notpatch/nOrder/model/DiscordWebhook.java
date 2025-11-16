@@ -4,7 +4,6 @@ import com.notpatch.nOrder.NOrder;
 import com.notpatch.nlib.util.NLogger;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
@@ -12,8 +11,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.net.URI;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * Class used to execute Discord Webhooks with low effort
@@ -132,7 +131,7 @@ public class DiscordWebhook {
             json.put("embeds", embedObjects.toArray());
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(NOrder.getInstance(), () -> {
+        NOrder.getInstance().getMorePaperLib().scheduling().asyncScheduler().run(() -> {
             try {
                 URI uri = new URI(this.url);
                 HttpsURLConnection connection = (HttpsURLConnection) uri.toURL().openConnection();
