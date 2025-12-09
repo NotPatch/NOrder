@@ -257,7 +257,9 @@ public class ItemSelectMenu extends FastInv {
     @Override
     protected void onClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        NSound.click(player);
+        if (event.getCursor().getType() != Material.AIR) {
+            NSound.click((Player) event.getWhoClicked());
+        }
     }
 
 }

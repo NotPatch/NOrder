@@ -11,7 +11,6 @@ import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -54,8 +53,6 @@ public class NewOrderMenu extends FastInv implements Listener {
 
         this.main = NOrder.getInstance();
         this.config = main.getConfigurationManager().getMenuConfiguration().getConfiguration();
-
-        Bukkit.getPluginManager().registerEvents(this, main);
         initializeMenu();
     }
 
@@ -376,7 +373,9 @@ public class NewOrderMenu extends FastInv implements Listener {
     @Override
     protected void onClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        NSound.click(player);
+        if (event.getCursor().getType() != Material.AIR) {
+            NSound.click((Player) event.getWhoClicked());
+        }
     }
 
 }
