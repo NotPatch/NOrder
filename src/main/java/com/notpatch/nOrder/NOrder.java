@@ -95,6 +95,7 @@ public final class NOrder extends JavaPlugin {
 
         orderLogger = new OrderLogger(this);
 
+
         orderManager = new OrderManager(this);
         orderManager.loadOrders();
 
