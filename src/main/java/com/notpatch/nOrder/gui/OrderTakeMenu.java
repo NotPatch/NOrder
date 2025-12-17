@@ -94,11 +94,8 @@ public class OrderTakeMenu extends FastInv {
         HumanEntity player = e.getWhoClicked();
         ItemStack clickedItem = e.getCurrentItem();
 
-        if (clickedItem == null || clickedItem.getType() == Material.AIR && clickedItem.getType() == order.getMaterial())
+        if (clickedItem == null || clickedItem.getType() == Material.AIR || clickedItem.getType() != order.getMaterial())
             return;
-
-        e.setCurrentItem(null);
-
 
         if (e.getClick() == ClickType.DROP) {
             player.getWorld().dropItemNaturally(player.getLocation(), clickedItem);
@@ -106,11 +103,13 @@ public class OrderTakeMenu extends FastInv {
         } else if (e.isLeftClick()) {
             if (player.getInventory().firstEmpty() != -1) {
                 player.getInventory().addItem(clickedItem);
-
                 e.setCurrentItem(null);
             } else {
                 player.sendMessage(LanguageLoader.getMessage("inventory-full"));
+                return;
             }
+        } else {
+            return;
         }
 
         order.addCollected(clickedItem.getAmount());
