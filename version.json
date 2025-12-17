@@ -1,5 +1,5 @@
 {
-  "version": "1.2.3",
-  "message": "Critical security fixes - Fixed dupe bug in order delivery system",
-  "critical": true
+  "version": "1.2.4",
+  "message": "General improvement",
+  "critical": false
 }
