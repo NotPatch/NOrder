@@ -48,3 +48,5 @@ order-deleted: "&aOrder ID %id% has been deleted."
 admin-usage-reload: "&7/orderadmin reload &8- &fReload plugin configurations"
 admin-usage-info: "&7/orderadmin info <id> &8- &fView detailed information about an order"
 admin-usage-delete: "&7/orderadmin delete <id> &8- &fDelete an order"
+admin-usage-player: "&7/orderadmin player <name> [limit] &8- &fView player's orders"
+

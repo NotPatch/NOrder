@@ -48,3 +48,5 @@ order-deleted: "&aSipariş %id% silindi."
 admin-usage-reload: "&7/orderadmin reload &8- &fYapılandırmaları yeniden yükle"
 admin-usage-info: "&7/orderadmin info <id> &8- &fBir sipariş hakkında ayrıntılı bilgi görüntüle"
 admin-usage-delete: "&7/orderadmin delete <id> &8- &fBir siparişi sil"
+admin-usage-player: "&7/orderadmin player <isim> [limit] &8- &fOyuncunun siparişlerini görüntüle"
+
