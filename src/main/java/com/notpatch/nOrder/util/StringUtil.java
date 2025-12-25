@@ -4,6 +4,8 @@ import com.notpatch.nOrder.LanguageLoader;
 import com.notpatch.nOrder.Settings;
 import com.notpatch.nOrder.model.Order;
 import com.notpatch.nOrder.model.ProgressBar;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 import java.time.Duration;
@@ -24,6 +26,10 @@ public class StringUtil {
             long minutes = duration.toMinutes() % 60;
             long seconds = duration.getSeconds() % 60;
             countdown = String.format(LanguageLoader.getMessage("order-countdown-format"), days, hours, minutes, seconds);
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            text = PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(order.getPlayerId()), text);
         }
 
         return text
