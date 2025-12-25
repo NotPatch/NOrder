@@ -10,6 +10,7 @@ import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
 import lombok.Getter;
 import lombok.Setter;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MainOrderMenu extends FastInv {
 
@@ -35,9 +37,14 @@ public class MainOrderMenu extends FastInv {
     private final List<Integer> orderSlots;
     private final int itemsPerPage;
     private List<Order> filteredOrders;
+    private Player player;
 
     public MainOrderMenu() {
         this(1, NOrder.getInstance().getOrderManager().getHighlightedOrdersFirst());
+    }
+
+    public MainOrderMenu(Player player) {
+        this(1, NOrder.getInstance().getOrderManager().getHighlightedOrdersFirst(), null, null, player);
     }
 
     public MainOrderMenu(List<Order> orders) {
@@ -45,10 +52,10 @@ public class MainOrderMenu extends FastInv {
     }
 
     public MainOrderMenu(int page, List<Order> orders) {
-        this(page, orders, null, null);
+        this(page, orders, null, null, null);
     }
 
-    public MainOrderMenu(int page, List<Order> orders, String filterType, String filterValue) {
+    public MainOrderMenu(int page, List<Order> orders, String filterType, String filterValue, Player player) {
         super(NOrder.getInstance().getConfigurationManager().getMenuConfiguration().getConfiguration().getInt("main-order-menu.size"),
                 ColorUtil.hexColor(NOrder.getInstance().getConfigurationManager().getMenuConfiguration().getConfiguration().getString("main-order-menu.title")));
 
@@ -96,6 +103,7 @@ public class MainOrderMenu extends FastInv {
         };
     }
 
+
     private void loadMenuItems(Configuration configuration) {
         ConfigurationSection itemsSection = configuration.getConfigurationSection("main-order-menu.items");
 
@@ -106,6 +114,29 @@ public class MainOrderMenu extends FastInv {
                 if (itemSection != null) {
                     ItemStack item = ItemBuilder.getItemFromSection(itemSection);
                     String action = itemSection.getString("action");
+
+                    if (item.hasItemMeta()) {
+                        ItemMeta meta = item.getItemMeta();
+                        if (meta == null) continue;
+
+                        String name = meta.getDisplayName();
+                        if (name != null && !name.isEmpty()) {
+                            String processedName = PlaceholderAPI.setPlaceholders(player, name);
+                            meta.setDisplayName(processedName);
+                            item.setItemMeta(meta);
+                        }
+
+                        List<String> lore = meta.getLore();
+                        if (lore != null) {
+                            List<String> processedLore = lore.stream()
+                                    .map(line -> PlaceholderAPI.setPlaceholders(player, line))
+                                    .collect(Collectors.toList());
+
+                            meta.setLore(processedLore);
+                            item.setItemMeta(meta);
+                        }
+                    }
+
 
                     if (itemSection.contains("slot")) {
                         int slot = itemSection.getInt("slot");
@@ -263,7 +294,7 @@ public class MainOrderMenu extends FastInv {
                 main.getChatInputManager().setAwaitingInput((Player) player, searchValue -> {
                     main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
                         new MainOrderMenu(1, main.getOrderManager().getHighlightedOrdersFirst(),
-                                "item", searchValue).open((Player) player);
+                                "item", searchValue, (Player) player).open((Player) player);
                     });
                 });
             }
