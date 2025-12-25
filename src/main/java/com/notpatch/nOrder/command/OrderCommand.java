@@ -61,7 +61,7 @@ public class OrderCommand implements BasicCommand {
             }
         }
 
-        new MainOrderMenu().open(player);
+        new MainOrderMenu(player).open(player);
         NSound.click(player);
 
     }
