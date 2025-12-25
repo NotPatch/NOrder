@@ -86,6 +86,12 @@ public class Settings {
                 .filter(Objects::nonNull)
                 .toList();
 
+        PROGRESS_BAR_LENGTH = config.getInt("progress-bar.length", 20);
+        PROGRESS_BAR_COMPLETE_CHAR = config.getString("progress-bar.complete-symbol", "█").charAt(0);
+        PROGRESS_BAR_INCOMPLETE_CHAR = config.getString("progress-bar.incomplete-symbol", "░").charAt(0);
+        PROGRESS_BAR_COMPLETE_COLOR = config.getString("progress-bar.complete-color", "&a");
+        PROGRESS_BAR_INCOMPLETE_COLOR = config.getString("progress-bar.incomplete-color", "&7");
+
         NOrder.getInstance().getMorePaperLib().scheduling().asyncScheduler().run(() -> {
             List<Material> items = Arrays.stream(Material.values())
                     .filter(m -> !m.isAir() && m.isItem() && !m.isLegacy())
@@ -94,12 +100,6 @@ public class Settings {
 
             NOrder.getInstance().getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> availableItems = items);
         });
-
-        PROGRESS_BAR_LENGTH = config.getInt("progress-bar.length", 20);
-        PROGRESS_BAR_COMPLETE_CHAR = config.getString("progress-bar.complete-char", "█").charAt(0);
-        PROGRESS_BAR_INCOMPLETE_CHAR = config.getString("progress-bar.incomplete-char", "░").charAt(0);
-        PROGRESS_BAR_COMPLETE_COLOR = config.getString("progress-bar.complete-color", "&a");
-        PROGRESS_BAR_INCOMPLETE_COLOR = config.getString("progress-bar.incomplete-color", "&7");
     }
 
     /**
