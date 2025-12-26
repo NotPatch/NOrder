@@ -88,22 +88,68 @@ public class PlaceholderHook extends PlaceholderExpansion {
             }
         }
 
-        // %norder_player_<player>_*
-        if (parts.length >= 3 && parts[0].equals("player")) {
-            String playerName = parts[1];
-            String field = parts[2];
-            switch (field) {
-                case "totalOrders" -> {
-                    return getPlayerTotalOrders(playerName);
+        // %norder_player_<type>% - uses the player from context
+        // %norder_player_{player_name}_<type>% - looks up specific player
+        if (parts.length >= 2 && parts[0].equals("player")) {
+            // Check if this is a simple player stat request without a player name
+            // e.g., %norder_player_totalOrders%
+            if (parts.length == 2) {
+                String field = parts[1];
+                if (player == null) {
+                    return "";
                 }
-                case "totalEarnings" -> {
-                    return getPlayerTotalEarnings(playerName);
+                String playerName = player.getName();
+                switch (field) {
+                    case "totalOrders" -> {
+                        return getPlayerTotalOrders(playerName);
+                    }
+                    case "totalEarnings" -> {
+                        return getPlayerTotalEarnings(playerName);
+                    }
+                    case "totalDelivered" -> {
+                        return getPlayerTotalDeliveredItems(playerName);
+                    }
+                    case "totalCollected" -> {
+                        return getPlayerTotalCollectedItems(playerName);
+                    }
                 }
-                case "totalDelivered" -> {
-                    return getPlayerTotalDeliveredItems(playerName);
-                }
-                case "totalCollected" -> {
-                    return getPlayerTotalCollectedItems(playerName);
+            }
+            
+            // For player-specific stats: %norder_player_{player_name}_<type>%
+            // We need to find the field name (last part) and extract player name from the middle
+            if (parts.length >= 3) {
+                String lastPart = parts[parts.length - 1];
+                
+                // Check if the last part is a valid field
+                if (lastPart.equals("totalOrders") || lastPart.equals("totalEarnings") || 
+                    lastPart.equals("totalDelivered") || lastPart.equals("totalCollected")) {
+                    
+                    // Extract player name from parts[1] to parts[length-2]
+                    // e.g., for "player_ItzFabbb____totalOrders", parts = ["player", "ItzFabbb", "", "", "", "totalOrders"]
+                    // player name = "ItzFabbb___" (join parts[1] to parts[length-2] with underscores)
+                    StringBuilder playerNameBuilder = new StringBuilder();
+                    for (int i = 1; i < parts.length - 1; i++) {
+                        if (i > 1) {
+                            playerNameBuilder.append("_");
+                        }
+                        playerNameBuilder.append(parts[i]);
+                    }
+                    String playerName = playerNameBuilder.toString();
+                    
+                    switch (lastPart) {
+                        case "totalOrders" -> {
+                            return getPlayerTotalOrders(playerName);
+                        }
+                        case "totalEarnings" -> {
+                            return getPlayerTotalEarnings(playerName);
+                        }
+                        case "totalDelivered" -> {
+                            return getPlayerTotalDeliveredItems(playerName);
+                        }
+                        case "totalCollected" -> {
+                            return getPlayerTotalCollectedItems(playerName);
+                        }
+                    }
                 }
             }
         }

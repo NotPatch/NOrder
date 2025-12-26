@@ -149,13 +149,19 @@ Spesific order placeholders
 - `%norder_order_<id>_createDate%`
 - `%norder_order_<id>_expirationDate%`
 
-Spesific player placeholders
-- `%norder_player_<player>_<>`
+Player statistics placeholders (for the player viewing the placeholder)
+- `%norder_player_totalOrders%` - Total orders created by the player
+- `%norder_player_totalEarnings%` - Total earnings from delivered orders
+- `%norder_player_totalDelivered%` - Total items delivered to orders
+- `%norder_player_totalCollected%` - Total items collected from orders
 
-- `%norder_player_<player>_totalOrders%`
-- `%norder_player_<player>_totalEarnings%`
-- `%norder_player_<player>_totalDelivered%`
-- `%norder_player_<player>_totalCollected%`
+Specific player statistics placeholders (for looking up other players)
+- `%norder_player_{player_name}_totalOrders%` - Total orders by specific player
+- `%norder_player_{player_name}_totalEarnings%` - Total earnings by specific player
+- `%norder_player_{player_name}_totalDelivered%` - Total items delivered by specific player
+- `%norder_player_{player_name}_totalCollected%` - Total items collected by specific player
+
+Note: Player names can contain underscores (e.g., `%norder_player_ItzFabbb____totalOrders%`)
 
 ## Discord Webhooks
 
