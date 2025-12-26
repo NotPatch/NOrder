@@ -1,5 +1,5 @@
 {
-  "version": "1.2.5",
-  "message": "ProgressBar feature minor bug fixes, Menu Item Flag support, Min-Max price for items, Menu Placeholder support, and various other improvements and bug fixes.",
+  "version": "1.2.6",
+  "message": "[1.2.5] ProgressBar feature minor bug fixes, Menu Item Flag support, Min-Max price for items, Menu Placeholder support, and various other improvements and bug fixes. | [1.2.6] Hotfix for menu item flag issue.",
   "critical": false
 }
