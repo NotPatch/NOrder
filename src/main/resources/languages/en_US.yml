@@ -2,6 +2,7 @@ price-too-low: "&cThe price should be at least %min_price%."
 price-too-high: "&cThe price cannot exceed %max_price%."
 not-enough-money: "&cYou do not have enough money to create this order."
 order-created: "&aOrder created, Item: %material%, Price: %price%, Quantity: %amount%, Total Price: %total_price%."
+order-broadcast: "&6[Order] &e%player% &7is buying &f%amount%x %material% &7for &a%total_price%&7! &8(/order)"
 no-permission: "&cYou do not have permission to use this."
 
 # Input Messages
@@ -17,6 +18,7 @@ invalid-quantity: "&cInvalid quantity! Please enter a positive number."
 invalid-price: "&cInvalid price! Please enter a valid number."
 no-item-selected: "&cPlease select an item first."
 inventory-full: "&cYour inventory is full!"
+no-items-to-collect: "&cThere are no items to collect!"
 order-limit-reached: "&cYou have reached the maximum number of active orders (%limit%)."
 
 # Confirmation Messages
