@@ -418,23 +418,32 @@ public class OrderManager {
     }
 
     public void cleanExpiredOrders() {
-        for (List<Order> orders : new ArrayList<>(ordersByPlayer.values())) {
-            orders.forEach(order -> {
-                if (order.isExpired()) {
-                    order.setStatus(OrderStatus.COMPLETED);
-                    if (order.getDelivered() < order.getAmount()) {
+        List<Order> expiredOrders = new ArrayList<>();
 
-                        double refundAmount = Math.max(0, order.getAmount() - order.getDelivered()) * order.getPrice();
-                        if (refundAmount > 0) {
-                            OfflinePlayer player = main.getServer().getOfflinePlayer(order.getPlayerId());
-                            main.getEconomy().depositPlayer(player, refundAmount);
-                        }
-                        main.getOrderLogger().logOrderExpired(order, refundAmount);
-                        order.setStatus(OrderStatus.ARCHIVED);
-                        main.getOrderLogger().logOrderArchived(order);
-                    }
+        for (List<Order> orders : new ArrayList<>(ordersByPlayer.values())) {
+            for (Order order : new ArrayList<>(orders)) {
+                if (order.getStatus() != OrderStatus.ACTIVE) continue;
+
+                if (order.isExpired()) {
+                    expiredOrders.add(order);
                 }
-            });
+            }
+        }
+
+        for (Order order : expiredOrders) {
+            order.setStatus(OrderStatus.COMPLETED);
+
+            double refundAmount = Math.max(0, order.getAmount() - order.getDelivered()) * order.getPrice();
+            if (refundAmount > 0) {
+                OfflinePlayer player = main.getServer().getOfflinePlayer(order.getPlayerId());
+                main.getEconomy().depositPlayer(player, refundAmount);
+            }
+            main.getOrderLogger().logOrderExpired(order, refundAmount);
+
+            order.setStatus(OrderStatus.ARCHIVED);
+            main.getOrderLogger().logOrderArchived(order);
+
+            removeOrder(order);
         }
 
         ordersByPlayer.values().removeIf(List::isEmpty);
