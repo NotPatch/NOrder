@@ -209,7 +209,7 @@ order-take-menu:
   size: 54
   items:
     filler:
-      slots: [ 0-8,9,17,18,26,27,35,36,44,45-53 ]
+      slots: [ 0-8,9,17,18,26,27,35,36,44,45,47,51,53 ]
       material: GRAY_STAINED_GLASS_PANE
       name: " "
       lore: [ ]
@@ -222,6 +222,19 @@ order-take-menu:
         - "&7Click to go back"
         - ""
       action: back
+    take-all:
+      slot: 48
+      material: HOPPER
+      name: "&a&lTake All Items"
+      lore:
+        - ""
+        - "&7Click to take all items"
+        - "&7into your inventory."
+        - ""
+        - "&8If inventory is full, items"
+        - "&8will fill available slots."
+        - ""
+      action: take-all
     info:
       slot: 4
       material: PAPER
