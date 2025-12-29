@@ -1,7 +1,7 @@
 package com.notpatch.nOrder.gui;
 
 import com.notpatch.nOrder.NOrder;
-import com.notpatch.nlib.builder.ItemBuilder;
+import com.notpatch.nOrder.util.ItemStackHelper;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
@@ -54,7 +54,7 @@ public class EnchantSelectMenu extends FastInv {
             for (String key : itemsSection.getKeys(false)) {
                 ConfigurationSection itemSection = itemsSection.getConfigurationSection(key);
                 if (itemSection != null) {
-                    ItemStack item = ItemBuilder.getItemFromSection(itemSection);
+                    ItemStack item = ItemStackHelper.fromSection(itemSection);
                     String action = itemSection.getString("action", "");
 
                     if (itemSection.contains("slot")) {
@@ -114,12 +114,11 @@ public class EnchantSelectMenu extends FastInv {
         String displayName = ColorUtil.hexColor(config.getString("enchant-select-menu.items.enchant-item-template.name", "&f" + enchantName)
                 .replace("%enchant_name%", enchantName));
 
-        return ItemBuilder.builder()
+        return ItemStackHelper.builder()
                 .material(Material.ENCHANTED_BOOK)
                 .displayName(displayName)
                 .lore(lore)
                 .glow(level > 0)
-                .build()
                 .build();
     }
 

@@ -4,8 +4,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.notpatch.nOrder.LanguageLoader;
 import com.notpatch.nOrder.NOrder;
 import com.notpatch.nOrder.model.Order;
+import com.notpatch.nOrder.util.ItemStackHelper;
 import com.notpatch.nOrder.util.StringUtil;
-import com.notpatch.nlib.builder.ItemBuilder;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
@@ -114,7 +114,7 @@ public class MainOrderMenu extends FastInv {
                 ConfigurationSection itemSection = itemsSection.getConfigurationSection(key);
 
                 if (itemSection != null) {
-                    ItemStack item = ItemBuilder.getItemFromSection(itemSection);
+                    ItemStack item = ItemStackHelper.fromSection(itemSection);
                     String action = itemSection.getString("action");
 
                     if (item.hasItemMeta()) {

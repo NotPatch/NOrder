@@ -3,7 +3,7 @@ package com.notpatch.nOrder.gui;
 import com.notpatch.nOrder.LanguageLoader;
 import com.notpatch.nOrder.NOrder;
 import com.notpatch.nOrder.Settings;
-import com.notpatch.nlib.builder.ItemBuilder;
+import com.notpatch.nOrder.util.ItemStackHelper;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
@@ -13,6 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class ItemSelectMenu extends FastInv {
             for (String key : itemsSection.getKeys(false)) {
                 ConfigurationSection itemSection = itemsSection.getConfigurationSection(key);
                 if (itemSection != null) {
-                    ItemStack item = ItemBuilder.getItemFromSection(itemSection);
+                    ItemStack item = ItemStackHelper.fromSection(itemSection);
                     String action = itemSection.getString("action", "");
 
                     if (itemSection.contains("slot")) {
@@ -118,32 +119,30 @@ public class ItemSelectMenu extends FastInv {
         if (itemsSection != null) {
             ConfigurationSection previousSection = itemsSection.getConfigurationSection("previous-page");
             if (previousSection != null) {
-                ItemStack previousButton = ItemBuilder.getItemFromSection(previousSection);
+                ItemStack previousButton = ItemStackHelper.fromSection(previousSection);
                 if (currentPage > 1) {
                     setItem(previousSection.getInt("slot"), previousButton,
                             e -> handleAction("previous-page", (Player) e.getWhoClicked()));
                 } else {
                     setItem(previousSection.getInt("slot"),
-                            ItemBuilder.builder()
+                            ItemStackHelper.builder()
                                     .material(previousButton.getType())
                                     .displayName(ColorUtil.hexColor("&8Previous Page"))
-                                    .build()
                                     .build());
                 }
             }
 
             ConfigurationSection nextSection = itemsSection.getConfigurationSection("next-page");
             if (nextSection != null) {
-                ItemStack nextButton = ItemBuilder.getItemFromSection(nextSection);
+                ItemStack nextButton = ItemStackHelper.fromSection(nextSection);
                 if ((currentPage * itemsPerPage) < totalItems) {
                     setItem(nextSection.getInt("slot"), nextButton,
                             e -> handleAction("next-page", (Player) e.getWhoClicked()));
                 } else {
                     setItem(nextSection.getInt("slot"),
-                            ItemBuilder.builder()
+                            ItemStackHelper.builder()
                                     .material(nextButton.getType())
                                     .displayName(ColorUtil.hexColor("&8Next Page"))
-                                    .build()
                                     .build());
                 }
             }
@@ -158,23 +157,26 @@ public class ItemSelectMenu extends FastInv {
             String name = ColorUtil.hexColor(template.getString("name", "&f%item_name%")
                     .replace("%item_name%", formatMaterialName(material)));
 
-            List<String> lore = new ArrayList<>();
-            for (String line : template.getStringList("lore")) {
-                lore.add(ColorUtil.hexColor(line));
-            }
+            List<String> lore = template.getStringList("lore");
 
-            return ItemBuilder.builder()
+            List<ItemFlag> itemFlags = new ArrayList<>();
+            for (String flagStr : template.getStringList("item-flags")) {
+                try {
+                    itemFlags.add(ItemFlag.valueOf(flagStr));
+                } catch (IllegalArgumentException e) {
+                }
+            }
+            return ItemStackHelper.builder()
                     .material(material)
                     .displayName(name)
                     .lore(lore)
-                    .build()
+                    .flags(itemFlags)
                     .build();
         }
 
-        return ItemBuilder.builder()
+        return ItemStackHelper.builder()
                 .material(material)
                 .displayName(ColorUtil.hexColor("&f" + formatMaterialName(material)))
-                .build()
                 .build();
     }
 

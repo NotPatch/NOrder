@@ -4,8 +4,8 @@ import com.notpatch.nOrder.LanguageLoader;
 import com.notpatch.nOrder.NOrder;
 import com.notpatch.nOrder.Settings;
 import com.notpatch.nOrder.model.Order;
+import com.notpatch.nOrder.util.ItemStackHelper;
 import com.notpatch.nOrder.util.PlayerUtil;
-import com.notpatch.nlib.builder.ItemBuilder;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
@@ -64,7 +64,7 @@ public class NewOrderMenu extends FastInv implements Listener {
                 ConfigurationSection itemSection = itemsSection.getConfigurationSection(key);
 
                 if (itemSection != null) {
-                    ItemStack item = ItemBuilder.getItemFromSection(itemSection);
+                    ItemStack item = ItemStackHelper.fromSection(itemSection);
                     String action = itemSection.getString("action");
 
                     if (itemSection.contains("slot")) {
@@ -145,11 +145,10 @@ public class NewOrderMenu extends FastInv implements Listener {
                     setItem(slot, displayItem, e -> handleMenuAction("select-item", e));
                 } else {
                     setItem(slot,
-                            ItemBuilder.builder()
+                            ItemStackHelper.builder()
                                     .material(Material.valueOf(selectItemSection.getString("material")))
                                     .displayName(ColorUtil.hexColor(selectItemSection.getString("name")))
                                     .lore(ColorUtil.getColoredList(selectItemSection.getStringList("lore")))
-                                    .build()
                                     .build(),
                             e -> handleMenuAction("select-item", e));
                 }
@@ -167,11 +166,11 @@ public class NewOrderMenu extends FastInv implements Listener {
                     .map(ColorUtil::hexColor)
                     .collect(Collectors.toList());
 
-            ItemStack quantityItem = ItemBuilder.builder().material(material)
+            ItemStack quantityItem = ItemStackHelper.builder().material(material)
                     .displayName(name)
                     .lore(lore)
                     .amount(Math.min(64, quantity))
-                    .build().build();
+                    .build();
 
             setItem(quantitySection.getInt("slot"), quantityItem,
                     e -> handleMenuAction("set-quantity", e));
@@ -189,10 +188,10 @@ public class NewOrderMenu extends FastInv implements Listener {
                     .collect(Collectors.toList());
 
             setItem(priceSection.getInt("slot"),
-                    ItemBuilder.builder().material(material)
+                    ItemStackHelper.builder().material(material)
                             .displayName(name)
                             .lore(lore)
-                            .build().build(),
+                            .build(),
                     e -> handleMenuAction("set-price", e));
         }
 
@@ -219,10 +218,10 @@ public class NewOrderMenu extends FastInv implements Listener {
                     .collect(Collectors.toList());
 
             setItem(confirmSection.getInt("slot"),
-                    ItemBuilder.builder().material(material)
+                    ItemStackHelper.builder().material(material)
                             .displayName(name)
                             .lore(lore)
-                            .build().build(),
+                            .build(),
                     e -> handleMenuAction("confirm-order", e));
         }
 
@@ -237,7 +236,7 @@ public class NewOrderMenu extends FastInv implements Listener {
                     .map(ColorUtil::hexColor)
                     .collect(Collectors.toList());
             setItem(highlightSection.getInt("slot"),
-                    ItemBuilder.builder().material(material).glow(isHighlighted).lore(lore).displayName(name).build().build()
+                    ItemStackHelper.builder().material(material).glow(isHighlighted).lore(lore).displayName(name).build()
                     , e -> handleMenuAction("toggle-highlight", e));
         }
     }
