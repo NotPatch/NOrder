@@ -2,7 +2,6 @@ package com.notpatch.nOrder.hook;
 
 import com.notpatch.nOrder.NOrder;
 import com.notpatch.nOrder.Settings;
-import com.notpatch.nOrder.database.DatabaseManager;
 import com.notpatch.nOrder.manager.OrderManager;
 import com.notpatch.nOrder.manager.PlayerStatisticsManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -112,6 +111,18 @@ public class PlaceholderHook extends PlaceholderExpansion {
                     case "totalCollected" -> {
                         return getPlayerTotalCollectedItems(playerName);
                     }
+                    case "currentOrder" -> {
+                        return getPlayerCurrentOrders(player);
+                    }
+                    case "activeOrder" -> {
+                        return getPlayerActiveOrders(player);
+                    }
+                    case "availableleftOrder" -> {
+                        return getPlayerAvailableLeftOrders(player);
+                    }
+                    case "limitOrder" -> {
+                        return getPlayerOrderLimit(player);
+                    }
                 }
             }
             
@@ -121,9 +132,11 @@ public class PlaceholderHook extends PlaceholderExpansion {
                 String lastPart = parts[parts.length - 1];
                 
                 // Check if the last part is a valid field
-                if (lastPart.equals("totalOrders") || lastPart.equals("totalEarnings") || 
-                    lastPart.equals("totalDelivered") || lastPart.equals("totalCollected")) {
-                    
+                if (lastPart.equals("totalOrders") || lastPart.equals("totalEarnings") ||
+                        lastPart.equals("totalDelivered") || lastPart.equals("totalCollected") ||
+                        lastPart.equals("currentOrder") || lastPart.equals("activeOrder") ||
+                        lastPart.equals("availableleftOrder") || lastPart.equals("limitOrder")) {
+
                     // Extract player name from parts[1] to parts[length-2]
                     // e.g., for "player_ItzFabbb____totalOrders", parts = ["player", "ItzFabbb", "", "", "", "totalOrders"]
                     // player name = "ItzFabbb___" (join parts[1] to parts[length-2] with underscores)
@@ -135,7 +148,10 @@ public class PlaceholderHook extends PlaceholderExpansion {
                         playerNameBuilder.append(parts[i]);
                     }
                     String playerName = playerNameBuilder.toString();
-                    
+
+                    // Get OfflinePlayer for player-specific stats that need UUID
+                    OfflinePlayer targetPlayer = org.bukkit.Bukkit.getOfflinePlayer(playerName);
+
                     switch (lastPart) {
                         case "totalOrders" -> {
                             return getPlayerTotalOrders(playerName);
@@ -148,6 +164,18 @@ public class PlaceholderHook extends PlaceholderExpansion {
                         }
                         case "totalCollected" -> {
                             return getPlayerTotalCollectedItems(playerName);
+                        }
+                        case "currentOrder" -> {
+                            return getPlayerCurrentOrders(targetPlayer);
+                        }
+                        case "activeOrder" -> {
+                            return getPlayerActiveOrders(targetPlayer);
+                        }
+                        case "availableleftOrder" -> {
+                            return getPlayerAvailableLeftOrders(targetPlayer);
+                        }
+                        case "limitOrder" -> {
+                            return getPlayerOrderLimit(targetPlayer);
                         }
                     }
                 }
@@ -214,5 +242,29 @@ public class PlaceholderHook extends PlaceholderExpansion {
     private String getPlayerTotalCollectedItems(String playerName) {
         if (playerStatsManager.getStatisticsByName(playerName) == null) return "0";
         return playerStatsManager.getStatisticsByName(playerName).getCollectedItems() + "";
+    }
+
+    private String getPlayerCurrentOrders(OfflinePlayer player) {
+        if (player == null) return "0";
+        return String.valueOf(orderManager.getPlayerOrderCount(player.getUniqueId()));
+    }
+
+    private String getPlayerActiveOrders(OfflinePlayer player) {
+        if (player == null) return "0";
+        return String.valueOf(orderManager.getPlayerOrders(player.getUniqueId()).stream()
+                .filter(o -> o.getStatus() == com.notpatch.nOrder.model.OrderStatus.ACTIVE)
+                .count());
+    }
+
+    private String getPlayerAvailableLeftOrders(OfflinePlayer player) {
+        if (player == null || !player.isOnline()) return "0";
+        int limit = com.notpatch.nOrder.util.PlayerUtil.getPlayerOrderLimit(player.getPlayer());
+        int current = orderManager.getPlayerOrderCount(player.getUniqueId());
+        return String.valueOf(Math.max(0, limit - current));
+    }
+
+    private String getPlayerOrderLimit(OfflinePlayer player) {
+        if (player == null || !player.isOnline()) return "1";
+        return String.valueOf(com.notpatch.nOrder.util.PlayerUtil.getPlayerOrderLimit(player.getPlayer()));
     }
 }
