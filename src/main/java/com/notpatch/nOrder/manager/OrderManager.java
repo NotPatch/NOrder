@@ -260,6 +260,7 @@ public class OrderManager {
             main.getPlayerStatsManager().getStatistics(order.getPlayerId()).addTotalOrders(1);
             main.getOrderLogger().logOrderCreated(order, totalPrice);
             NSound.success(player);
+            broadcastOrder(order, totalPrice);
             return;
         }
 
@@ -295,6 +296,7 @@ public class OrderManager {
         main.getPlayerStatsManager().getStatistics(order.getPlayerId()).addTotalOrders(1);
         main.getOrderLogger().logOrderCreated(order, totalPrice);
         NSound.success(player);
+        broadcastOrder(order, totalPrice);
         DiscordWebhook webhook = main.getWebhookManager().getWebhooks().get("order-create");
         if (webhook != null) {
             String content = webhook.getContent()
@@ -382,11 +384,7 @@ public class OrderManager {
         List<Order> playerOrders = ordersByPlayer.get(order.getPlayerId());
         if (playerOrders == null) return false;
 
-        if (order.getStatus() == OrderStatus.ARCHIVED) {
-            return false;
-        }
-
-        boolean removed = playerOrders.removeIf(o -> o == order);
+        boolean removed = playerOrders.removeIf(o -> o.getId().equals(order.getId()));
 
         if (playerOrders.isEmpty()) {
             ordersByPlayer.remove(order.getPlayerId());
@@ -406,6 +404,21 @@ public class OrderManager {
         return removed;
     }
 
+    private void updateOrderStatusInDatabase(Order order) {
+        String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
+
+        try (Connection conn = main.getDatabaseManager().getDataSource().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, order.getStatus().name());
+            stmt.setString(2, order.getId());
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            NLogger.error("Failed to update order status in database: " + e.getMessage());
+        }
+    }
+
     public String createRandomId() {
         int length = 6;
         final String chars = "0123456789";
@@ -415,6 +428,20 @@ public class OrderManager {
             sb.append(chars.charAt(rnd.nextInt(chars.length())));
         }
         return sb.toString();
+    }
+
+    private void broadcastOrder(Order order, double totalPrice) {
+        if (!Settings.BROADCAST_ENABLED) return;
+        if (totalPrice < Settings.BROADCAST_MIN_TOTAL_PRICE) return;
+
+        String message = LanguageLoader.getMessage("order-broadcast")
+                .replace("%player%", order.getPlayerName())
+                .replace("%material%", StringUtil.formatMaterialName(order.getMaterial()))
+                .replace("%amount%", String.valueOf(order.getAmount()))
+                .replace("%price%", String.format("%.2f", order.getPrice()))
+                .replace("%total_price%", String.format("%.2f", totalPrice));
+
+        main.getServer().broadcast(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(message));
     }
 
     public void cleanExpiredOrders() {
@@ -440,10 +467,14 @@ public class OrderManager {
             }
             main.getOrderLogger().logOrderExpired(order, refundAmount);
 
+            // Önce cache'den kaldır, sonra status'u ARCHIVED yap
+            removeOrder(order);
+
             order.setStatus(OrderStatus.ARCHIVED);
             main.getOrderLogger().logOrderArchived(order);
 
-            removeOrder(order);
+            // Database'de status'u güncelle
+            updateOrderStatusInDatabase(order);
         }
 
         ordersByPlayer.values().removeIf(List::isEmpty);
