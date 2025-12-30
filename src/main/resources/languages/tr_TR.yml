@@ -4,6 +4,7 @@ not-enough-money: "&cBu siparişi oluşturmak için yeterli paranız yok."
 order-created: "&aSipariş oluşturuldu, Ürün: %material%, Fiyat: %price%, Adet: %amount%, Toplam Fiyat: %total_price%."
 order-broadcast: "&6[Sipariş] &e%player% &f%amount%x %material% &7satın alıyor, toplam &a%total_price%&7! &8(/order)"
 no-permission: "&cBu komutu kullanma izniniz yok."
+create-command-usage: "&cKullanım: /order create <eşya> <miktar> <fiyat>"
 
 # Input Messages
 enter-item: "&aLütfen ürün adını yazın:"

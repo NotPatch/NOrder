@@ -4,6 +4,7 @@ not-enough-money: "&cYou do not have enough money to create this order."
 order-created: "&aOrder created, Item: %material%, Price: %price%, Quantity: %amount%, Total Price: %total_price%."
 order-broadcast: "&6[Order] &e%player% &7is buying &f%amount%x %material% &7for &a%total_price%&7! &8(/order)"
 no-permission: "&cYou do not have permission to use this."
+create-command-usage: "&cUsage: /order create <item> <quantity> <price>"
 
 # Input Messages
 enter-item: "&aPlease type the item name:"
