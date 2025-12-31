@@ -1,5 +1,6 @@
 package com.notpatch.nOrder;
 
+import com.notpatch.nOrder.hook.ItemsAdderHook;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -126,7 +127,8 @@ public class Settings {
             return;
         }
 
-        if (!NOrder.getInstance().getItemsAdderHook().isAvailable()) {
+        ItemsAdderHook itemsAdderHook = NOrder.getInstance().getItemsAdderHook();
+        if (itemsAdderHook == null || !itemsAdderHook.isAvailable()) {
             return;
         }
 
