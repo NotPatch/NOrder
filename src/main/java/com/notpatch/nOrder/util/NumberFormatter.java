@@ -17,8 +17,12 @@ public class NumberFormatter {
     }
 
     public static String format(double value) {
+
         if (value < 1000) {
-            return String.valueOf((int) value);
+            if (decimalPlaces <= 0) {
+                return String.valueOf((long) value);
+            }
+            return String.format("%." + decimalPlaces + "f", value);
         }
 
         int exponent = (int) (Math.log(value) / Math.log(1000));
