@@ -13,7 +13,6 @@ import com.notpatch.nlib.util.ColorUtil;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -84,7 +83,6 @@ public class OrderCommand implements BasicCommand {
      * All validations are performed before any economy transaction
      */
     private void handleCreateCommand(Player player, String[] args) {
-        // Usage validation
         if (args.length != 4) {
             player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("create-command-usage")));
             NSound.error(player);
@@ -95,7 +93,6 @@ public class OrderCommand implements BasicCommand {
         String quantityStr = args[2];
         String priceStr = args[3];
 
-        // Step 1: Validate material
         Material material = Material.matchMaterial(materialName);
         if (material == null || !material.isItem() || material.isAir()) {
             player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("invalid-item")
@@ -104,7 +101,6 @@ public class OrderCommand implements BasicCommand {
             return;
         }
 
-        // Check if material is in blacklist (available items)
         if (!Settings.availableItems.contains(material)) {
             player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("invalid-item")
                     .replace("%item%", materialName)));
@@ -112,7 +108,6 @@ public class OrderCommand implements BasicCommand {
             return;
         }
 
-        // Step 2: Validate quantity
         int quantity;
         try {
             quantity = Integer.parseInt(quantityStr);
@@ -121,7 +116,6 @@ public class OrderCommand implements BasicCommand {
                 NSound.error(player);
                 return;
             }
-            // Check for reasonable quantity to prevent overflow
             if (quantity > 1000000) {
                 player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("invalid-quantity")));
                 NSound.error(player);
@@ -133,7 +127,6 @@ public class OrderCommand implements BasicCommand {
             return;
         }
 
-        // Step 3: Validate price per item
         double pricePerItem;
         try {
             pricePerItem = Double.parseDouble(priceStr);
@@ -148,7 +141,6 @@ public class OrderCommand implements BasicCommand {
             return;
         }
 
-        // Step 4: Validate price against configured limits
         double minPrice = Settings.getMinPricePerItem(material);
         double maxPrice = Settings.getMaxPricePerItem(material);
         
@@ -166,17 +158,9 @@ public class OrderCommand implements BasicCommand {
             return;
         }
 
-        // Step 5: Calculate total price
         double totalPrice = quantity * pricePerItem;
         
-        // Step 6: Check if total price meets minimum (must be at least 1)
-        if (totalPrice < 1) {
-            player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("price-too-low")));
-            NSound.error(player);
-            return;
-        }
 
-        // Step 7: Check player order limit (unless admin)
         if (!PlayerUtil.isPlayerAdmin(player)) {
             int playerOrderLimit = PlayerUtil.getPlayerOrderLimit(player);
             if (NOrder.getInstance().getOrderManager().getPlayerOrderCount(player.getUniqueId()) >= playerOrderLimit) {
@@ -186,7 +170,6 @@ public class OrderCommand implements BasicCommand {
                 return;
             }
             
-            // Step 8: Check player balance BEFORE creating the order (only for non-admins)
             if (NOrder.getInstance().getEconomy().getBalance(player) < totalPrice) {
                 player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("not-enough-money")));
                 NSound.error(player);
@@ -194,16 +177,20 @@ public class OrderCommand implements BasicCommand {
             }
         }
 
-        // All validations passed - now create the order
-        // OrderManager.addOrder() will handle the economy transaction and order creation atomically
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expireAt = now.plusDays(PlayerUtil.getPlayerOrderExpiration(player));
         String id = NOrder.getInstance().getOrderManager().createRandomId();
         
         ItemStack item = new ItemStack(material);
-        Order order = new Order(id, player.getUniqueId(), player.getName(), item, quantity, pricePerItem, now, expireAt, false);
-        
-        // This method will withdraw money and create the order atomically
+
+        String customItemId = null;
+        if (NOrder.getInstance().getItemsAdderHook() != null &&
+                NOrder.getInstance().getItemsAdderHook().isAvailable()) {
+            customItemId = NOrder.getInstance().getItemsAdderHook().getCustomItemId(item);
+        }
+
+        Order order = new Order(id, player.getUniqueId(), player.getName(), item, customItemId, quantity, pricePerItem, now, expireAt, false);
+
         NOrder.getInstance().getOrderManager().addOrder(order);
     }
 
@@ -219,7 +206,6 @@ public class OrderCommand implements BasicCommand {
                     .filter(suggestion -> suggestion.toLowerCase().startsWith(input))
                     .collect(Collectors.toList());
         } else if (args.length == 2 && args[0].equalsIgnoreCase("create")) {
-            // Suggest material names
             String input = args[1].toUpperCase();
             return Settings.availableItems.stream()
                     .map(Material::name)
@@ -227,10 +213,8 @@ public class OrderCommand implements BasicCommand {
                     .limit(50)
                     .collect(Collectors.toList());
         } else if (args.length == 3 && args[0].equalsIgnoreCase("create")) {
-            // Suggest quantity examples
             return List.of("1", "64", "128");
         } else if (args.length == 4 && args[0].equalsIgnoreCase("create")) {
-            // Suggest price examples
             return List.of("1.0", "10.0", "100.0");
         }
 
