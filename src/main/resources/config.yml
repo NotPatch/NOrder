@@ -5,11 +5,12 @@ database:
   database: norder
   username: root
   password: password123
-  pool-size: 10
-  minimum-idle: 5
-  keepalive-time: 600000
-  maximum-lifetime: 1800000
-  connection-timeout: 10000
+  # Connection pool settings
+  pool-size: 10           # Maximum number of connections in the pool
+  minimum-idle: 2         # Minimum idle connections to maintain
+  keepalive-time: 600000  # Time in ms to keep idle connections alive (10 minutes)
+  maximum-lifetime: 1800000  # Maximum lifetime of a connection in ms (30 minutes)
+  connection-timeout: 10000  # Timeout in ms for getting a connection from the pool (10 seconds)
 
 lang: en_US
 
@@ -39,6 +40,8 @@ settings:
   send-webhooks: false
   min-price-per-item: 0.01
   max-price-per-item: 1000
+  # Enable ItemsAdder custom items support
+  itemsadder-support: true
   # Broadcast settings for new orders
   broadcast:
     enabled: true
