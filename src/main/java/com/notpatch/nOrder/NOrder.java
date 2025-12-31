@@ -94,9 +94,7 @@ public final class NOrder extends JavaPlugin {
                 .checkPlugin("ItemsAdder", false)
                 .onSuccess(() -> {
                     itemsAdderHook = new ItemsAdderHook();
-                });
-
-        compatibility.validate();
+                }).validate();
 
         saveDefaultConfig();
         saveConfig();
