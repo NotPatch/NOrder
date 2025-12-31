@@ -8,9 +8,7 @@ import lombok.Getter;
 import org.bukkit.configuration.Configuration;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -157,6 +155,7 @@ public class DatabaseManager {
                     player_id VARCHAR(36) NOT NULL,
                     player_name VARCHAR(16) NOT NULL,
                     material VARCHAR(50) NOT NULL,
+                    custom_item_id VARCHAR(100) DEFAULT NULL,
                     enchantments TEXT DEFAULT NULL,
                     amount INT NOT NULL,
                     price DOUBLE NOT NULL,
@@ -185,6 +184,7 @@ public class DatabaseManager {
                     player_id VARCHAR(36) NOT NULL,
                     player_name VARCHAR(16) NOT NULL,
                     material VARCHAR(50) NOT NULL,
+                    custom_item_id VARCHAR(100) DEFAULT NULL,
                     enchantments TEXT DEFAULT NULL,
                     amount INT NOT NULL,
                     price DOUBLE NOT NULL,
@@ -221,8 +221,67 @@ public class DatabaseManager {
             }
 
             NLogger.info("Created orders table successfully.");
+
+            runMigrations(conn);
+
         } catch (SQLException e) {
             NLogger.error("Failed to create orders table: " + e.getMessage());
+        }
+    }
+
+
+    private void runMigrations(Connection conn) {
+        try {
+            if (!columnExists(conn, "orders", "custom_item_id")) {
+                addCustomItemIdColumn(conn);
+            }
+        } catch (Exception e) {
+            NLogger.error("Failed to run migrations: " + e.getMessage());
+        }
+    }
+
+
+    private boolean columnExists(Connection conn, String tableName, String columnName) {
+        try {
+            String query = usingSQLite
+                    ? "PRAGMA table_info(" + tableName + ")"
+                    : "SHOW COLUMNS FROM " + tableName + " LIKE ?";
+
+            if (usingSQLite) {
+                try (Statement stmt = conn.createStatement();
+                     ResultSet rs = stmt.executeQuery(query)) {
+                    while (rs.next()) {
+                        String colName = rs.getString("name");
+                        if (colName.equalsIgnoreCase(columnName)) {
+                            return true;
+                        }
+                    }
+                }
+            } else {
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setString(1, columnName);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        return rs.next();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            NLogger.warn("Failed to check if column exists: " + e.getMessage());
+        }
+        return false;
+    }
+
+
+    private void addCustomItemIdColumn(Connection conn) {
+        try {
+            String sql = usingSQLite
+                    ? "ALTER TABLE orders ADD COLUMN custom_item_id VARCHAR(100) DEFAULT NULL"
+                    : "ALTER TABLE orders ADD COLUMN custom_item_id VARCHAR(100) DEFAULT NULL AFTER material";
+
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate(sql);
+            }
+        } catch (SQLException e) {
         }
     }
 
