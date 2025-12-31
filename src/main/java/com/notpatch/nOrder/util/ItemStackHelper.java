@@ -1,17 +1,129 @@
 package com.notpatch.nOrder.util;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.notpatch.nOrder.NOrder;
 import com.notpatch.nlib.util.ColorUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ItemStackHelper {
+
+    public static boolean isSameItem(ItemStack item1, ItemStack item2) {
+        if (item1 == null || item2 == null) return false;
+
+        if (NOrder.getInstance().getItemsAdderHook() != null &&
+                NOrder.getInstance().getItemsAdderHook().isAvailable()) {
+
+            boolean isCustom1 = NOrder.getInstance().getItemsAdderHook().isCustomItem(item1);
+            boolean isCustom2 = NOrder.getInstance().getItemsAdderHook().isCustomItem(item2);
+
+            if (isCustom1 && isCustom2) {
+                return NOrder.getInstance().getItemsAdderHook().isSameCustomItem(item1, item2);
+            }
+
+            if (isCustom1 != isCustom2) return false;
+        }
+
+        return bukkitSameItem(item1, item2);
+    }
+
+    private static boolean bukkitSameItem(ItemStack item1, ItemStack item2) {
+        if (item1 == null || item2 == null) {
+            return false;
+        }
+
+        if (item1.getType() != item2.getType()) {
+            return false;
+        }
+
+        if (item1.hasItemMeta() != item2.hasItemMeta()) {
+            return false;
+        }
+
+        if (item1 instanceof Damageable && item2 instanceof Damageable) {
+            Damageable dmg1 = (Damageable) item1.getItemMeta();
+            if (dmg1.getDamage() < item1.getType().getMaxDurability()) {
+                return false;
+            }
+            Damageable dmg2 = (Damageable) item2.getItemMeta();
+            if (dmg2.getDamage() < item2.getType().getMaxDurability()) {
+                return false;
+            }
+        }
+
+        if (item1.getItemMeta() == null || item2.getItemMeta() == null) {
+            return true;
+        }
+
+        if (item1.getItemMeta().hasEnchants() != item2.getItemMeta().hasEnchants()) {
+            return false;
+        }
+
+        if (item1.getItemMeta().hasEnchants()) {
+            Map<Enchantment, Integer> enchants1 = item1.getItemMeta().getEnchants();
+            Map<Enchantment, Integer> enchants2 = item2.getItemMeta().getEnchants();
+
+            if (enchants1.size() != enchants2.size()) {
+                return false;
+            }
+
+            for (Map.Entry<Enchantment, Integer> entry : enchants1.entrySet()) {
+                Enchantment enchant = entry.getKey();
+                Integer level1 = entry.getValue();
+                Integer level2 = enchants2.get(enchant);
+
+                if (level2 == null || !level1.equals(level2)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Gets the display name for an item (custom or vanilla)
+     */
+    public static String getItemDisplayName(ItemStack item) {
+        if (item == null) return "Unknown";
+
+        if (NOrder.getInstance().getItemsAdderHook() != null &&
+                NOrder.getInstance().getItemsAdderHook().isAvailable()) {
+
+            String customName = NOrder.getInstance().getItemsAdderHook().getCustomItemDisplayName(item);
+            if (customName != null) return customName;
+        }
+
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+            return item.getItemMeta().getDisplayName();
+        }
+
+        return formatMaterialName(item.getType());
+    }
+
+    public static String formatMaterialName(Material material) {
+        String name = material.name().toLowerCase().replace("_", " ");
+        String[] words = name.split(" ");
+        StringBuilder result = new StringBuilder();
+
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                result.append(Character.toUpperCase(word.charAt(0)))
+                        .append(word.substring(1))
+                        .append(" ");
+            }
+        }
+
+        return result.toString().trim();
+    }
 
     /**
      * Creates an ItemStack from a configuration section.
