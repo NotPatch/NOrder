@@ -3,6 +3,7 @@ package com.notpatch.nOrder.gui;
 import com.google.common.collect.ArrayListMultimap;
 import com.notpatch.nOrder.LanguageLoader;
 import com.notpatch.nOrder.NOrder;
+import com.notpatch.nOrder.Settings;
 import com.notpatch.nOrder.model.Order;
 import com.notpatch.nOrder.util.ItemStackHelper;
 import com.notpatch.nOrder.util.StringUtil;
@@ -199,37 +200,11 @@ public class MainOrderMenu extends FastInv {
     }
 
     private ItemStack createOrderItem(Order order, ConfigurationSection template) {
-        String materialStr = template.getString("material", "PAPER");
-        if (materialStr.equals("%material%")) {
-            materialStr = order.getMaterial().name();
-        }
-
-        Material material;
-        try {
-            material = Material.valueOf(materialStr);
-        } catch (IllegalArgumentException e) {
-            material = Material.PAPER;
-        }
-
-        ItemStack itemStack = order.getItem();
-        Map<Enchantment, Integer> enchantments;
-        if (itemStack != null) {
-            ItemMeta meta = itemStack.getItemMeta();
-            if (meta != null) {
-                enchantments = meta.getEnchants();
-            } else {
-                enchantments = new HashMap<>();
-            }
-        } else {
-            enchantments = new HashMap<>();
-        }
-
         String nameTemplate = template.getString("name", "&f&lSipariş");
         String name = StringUtil.replaceOrderPlaceholders(nameTemplate, order);
 
         List<String> loreTemplate = template.getStringList("lore");
         List<String> lore = new ArrayList<>();
-
         for (String line : loreTemplate) {
             lore.add(StringUtil.replaceOrderPlaceholders(line, order));
         }
@@ -245,7 +220,47 @@ public class MainOrderMenu extends FastInv {
             }
         }
 
-        ItemStack item = new ItemStack(material, 1);
+        ItemStack item;
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
+
+        if (order.isCustomItem()) {
+            item = Settings.getCustomItemFromCache(order.getCustomItemId());
+
+            if (item == null) {
+                item = order.getItem().clone();
+            }
+
+            item.setAmount(1);
+
+            ItemMeta originalMeta = item.getItemMeta();
+            if (originalMeta != null) {
+                enchantments = originalMeta.getEnchants();
+            }
+        } else {
+            String materialStr = template.getString("material", "PAPER");
+            if (materialStr.equals("%material%")) {
+                materialStr = order.getMaterial().name();
+            }
+
+            Material material;
+            try {
+                material = Material.valueOf(materialStr);
+            } catch (IllegalArgumentException e) {
+                material = Material.PAPER;
+            }
+
+            item = new ItemStack(material, 1);
+
+            ItemStack orderItem = order.getItem();
+            if (orderItem != null) {
+                ItemMeta meta = orderItem.getItemMeta();
+                if (meta != null) {
+                    enchantments = meta.getEnchants();
+                }
+            }
+        }
+
+        Map<Enchantment, Integer> finalEnchantments = enchantments;
         item.editMeta(meta -> {
             meta.setDisplayName(ColorUtil.hexColor(name));
             meta.setLore(lore.stream().map(ColorUtil::hexColor).toList());
@@ -255,8 +270,8 @@ public class MainOrderMenu extends FastInv {
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
 
-            if (!enchantments.isEmpty()) {
-                for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+            if (!finalEnchantments.isEmpty()) {
+                for (Map.Entry<Enchantment, Integer> entry : finalEnchantments.entrySet()) {
                     meta.addEnchant(entry.getKey(), entry.getValue(), true);
                 }
             }

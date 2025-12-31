@@ -4,6 +4,7 @@ import com.notpatch.nOrder.LanguageLoader;
 import com.notpatch.nOrder.NOrder;
 import com.notpatch.nOrder.model.Order;
 import com.notpatch.nOrder.model.OrderStatus;
+import com.notpatch.nOrder.util.ItemStackHelper;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
@@ -11,18 +12,15 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.ShulkerBox;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class OrderDetailsMenu extends FastInv {
 
@@ -226,57 +224,7 @@ public class OrderDetailsMenu extends FastInv {
     }
 
     private boolean isSameItem(ItemStack item1, ItemStack item2) {
-        if (item1 == null || item2 == null) {
-            return false;
-        }
-
-        if (item1.getType() != item2.getType()) {
-            return false;
-        }
-
-        if (item1.hasItemMeta() != item2.hasItemMeta()) {
-            return false;
-        }
-
-        if (item1 instanceof Damageable && item2 instanceof Damageable) {
-            Damageable dmg1 = (Damageable) item1.getItemMeta();
-            if (dmg1.getDamage() < item1.getType().getMaxDurability()) {
-                return false;
-            }
-            Damageable dmg2 = (Damageable) item2.getItemMeta();
-            if (dmg2.getDamage() < item2.getType().getMaxDurability()) {
-                return false;
-            }
-        }
-
-        if (item1.getItemMeta() == null || item2.getItemMeta() == null) {
-            return true;
-        }
-
-        if (item1.getItemMeta().hasEnchants() != item2.getItemMeta().hasEnchants()) {
-            return false;
-        }
-
-        if (item1.getItemMeta().hasEnchants()) {
-            Map<Enchantment, Integer> enchants1 = item1.getItemMeta().getEnchants();
-            Map<Enchantment, Integer> enchants2 = item2.getItemMeta().getEnchants();
-
-            if (enchants1.size() != enchants2.size()) {
-                return false;
-            }
-
-            for (Map.Entry<Enchantment, Integer> entry : enchants1.entrySet()) {
-                Enchantment enchant = entry.getKey();
-                Integer level1 = entry.getValue();
-                Integer level2 = enchants2.get(enchant);
-
-                if (level2 == null || !level1.equals(level2)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return ItemStackHelper.isSameItem(item1, item2);
     }
 
 

@@ -325,7 +325,14 @@ public class NewOrderMenu extends FastInv implements Listener {
                 LocalDateTime now = LocalDateTime.now();
                 LocalDateTime expireAt = now.plusDays(PlayerUtil.getPlayerOrderExpiration(player));
                 String id = main.getOrderManager().createRandomId();
-                Order order = new Order(id, player.getUniqueId(), player.getName(), selectedItem, quantity, pricePerItem, now, expireAt, isHighlighted);
+
+                // Check if item is custom ItemsAdder item
+                String customItemId = null;
+                if (main.getItemsAdderHook() != null && main.getItemsAdderHook().isAvailable()) {
+                    customItemId = main.getItemsAdderHook().getCustomItemId(selectedItem);
+                }
+
+                Order order = new Order(id, player.getUniqueId(), player.getName(), selectedItem, customItemId, quantity, pricePerItem, now, expireAt, isHighlighted);
 
                 NOrder.getInstance().getOrderManager().addOrder(order);
 

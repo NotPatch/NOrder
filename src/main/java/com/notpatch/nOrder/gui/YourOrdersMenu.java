@@ -2,6 +2,7 @@ package com.notpatch.nOrder.gui;
 
 import com.notpatch.nOrder.LanguageLoader;
 import com.notpatch.nOrder.NOrder;
+import com.notpatch.nOrder.Settings;
 import com.notpatch.nOrder.model.Order;
 import com.notpatch.nOrder.model.OrderStatus;
 import com.notpatch.nOrder.util.ItemStackHelper;
@@ -132,9 +133,6 @@ public class YourOrdersMenu extends FastInv {
     }
 
     private ItemStack createOrderItem(Order order, ConfigurationSection template) {
-        String materialStr = template.getString("material", "PAPER");
-        Material material = Material.valueOf(materialStr.replace("%material%", order.getMaterial().name()));
-
         String nameTemplate = template.getString("name", "&f&lSipariş");
         String name = StringUtil.replaceOrderPlaceholders(nameTemplate, order);
 
@@ -145,17 +143,40 @@ public class YourOrdersMenu extends FastInv {
             lore.add(StringUtil.replaceOrderPlaceholders(line, order));
         }
 
-        return ItemStackHelper.builder()
-                .material(material)
-                .displayName(ColorUtil.hexColor(name))
-                .lore(lore.stream().map(ColorUtil::hexColor).toList())
-                .build();
+        ItemStack item;
+
+        if (order.isCustomItem()) {
+            item = Settings.getCustomItemFromCache(order.getCustomItemId());
+
+            if (item == null) {
+                item = order.getItem().clone();
+            }
+
+            item.setAmount(1);
+
+            item.editMeta(meta -> {
+                meta.setDisplayName(ColorUtil.hexColor(name));
+                meta.setLore(lore.stream().map(ColorUtil::hexColor).toList());
+            });
+        } else {
+            String materialStr = template.getString("material", "PAPER");
+            Material material = Material.valueOf(materialStr.replace("%material%", order.getMaterial().name()));
+
+            item = ItemStackHelper.builder()
+                    .material(material)
+                    .displayName(ColorUtil.hexColor(name))
+                    .lore(lore.stream().map(ColorUtil::hexColor).toList())
+                    .build();
+        }
+
+        return item;
     }
 
 
     private void handleOrderClick(Order order, HumanEntity player, InventoryClickEvent event) {
         if (order.getStatus() == OrderStatus.ARCHIVED)
             return;
+        event.setCancelled(true);
         player.closeInventory();
         if (event.getClick() == ClickType.SHIFT_RIGHT) {
             player.sendMessage(LanguageLoader.getMessage("enter-confirm"));
