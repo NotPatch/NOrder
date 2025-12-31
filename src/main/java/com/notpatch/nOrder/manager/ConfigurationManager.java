@@ -1,5 +1,6 @@
 package com.notpatch.nOrder.manager;
 
+import com.notpatch.nOrder.configuration.CustomItemConfiguration;
 import com.notpatch.nOrder.configuration.MenuConfiguration;
 import com.notpatch.nOrder.configuration.WebhookConfiguration;
 import com.notpatch.nlib.configuration.NConfiguration;
@@ -14,6 +15,8 @@ public class ConfigurationManager {
     private final MenuConfiguration menuConfiguration;
     @Getter
     private final WebhookConfiguration webhookConfiguration;
+    @Getter
+    private final CustomItemConfiguration customItemConfiguration;
 
     @Getter
     public List<NConfiguration> configurations = new ArrayList<>();
@@ -21,6 +24,7 @@ public class ConfigurationManager {
     public ConfigurationManager() {
         configurations.add(menuConfiguration = new MenuConfiguration());
         configurations.add(webhookConfiguration = new WebhookConfiguration());
+        configurations.add(customItemConfiguration = new CustomItemConfiguration());
     }
 
     public void loadConfigurations() {
