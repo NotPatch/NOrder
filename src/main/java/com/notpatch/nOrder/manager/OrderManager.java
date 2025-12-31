@@ -273,12 +273,6 @@ public class OrderManager {
             return;
         }
 
-        if (totalPrice < 1) {
-            player.sendMessage(LanguageLoader.getMessage("price-too-low"));
-            NSound.error(player);
-            return;
-        }
-
         if (main.getEconomy().getBalance(offlinePlayer) < totalPrice) {
             player.sendMessage(LanguageLoader.getMessage("not-enough-money"));
             NSound.error(player);
