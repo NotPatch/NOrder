@@ -1,5 +1,5 @@
 {
-  "version": "1.3.0",
-  "message": "✨ Major Update: ItemsAdder Integration!\n\n🎨 New Features:\n• Full ItemsAdder custom items support\n• Configurable via customitems.yml\n\n🔧 Improvements:\n• LuckPerms permission nodes support\n\n🐛 Bug Fixes:\n• Fixed money duplication exploit\n• Fixed order expiration not removing from cache\n• Fixed minimum price placeholder not updating\n• Fixed console command entity errors\n",
+  "version": "1.3.2",
+  "message": "Fixed Discord webhook duplicate message issue\n- Added Nexo and ItemsAdder support\n- Fixes bugs\n- Added debug mode (config.yml)",
   "critical": false
 }
