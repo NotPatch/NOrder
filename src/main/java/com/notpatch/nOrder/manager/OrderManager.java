@@ -22,6 +22,7 @@ import java.sql.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ public class OrderManager {
 
     private final NOrder main;
 
-    private final Map<UUID, List<Order>> ordersByPlayer = new HashMap<>();
+    private final Map<UUID, List<Order>> ordersByPlayer = new ConcurrentHashMap<>();
 
     public OrderManager(NOrder main) {
         this.main = main;
@@ -93,7 +94,7 @@ public class OrderManager {
                 boolean highlight = rs.getBoolean("highlight");
                 String status = rs.getString("status");
 
-                if (status.equalsIgnoreCase("ARCHIVED")) continue;
+                if (status.equalsIgnoreCase("ARCHIVED") || status.equalsIgnoreCase("CANCELLED")) continue;
 
                 Order order = new Order(orderId, playerId, playerName, item, customItemId, amount, price, createdAt, expiresAt, highlight);
                 order.setStatus(OrderStatus.valueOf(status));
@@ -296,12 +297,14 @@ public class OrderManager {
         broadcastOrder(order, totalPrice);
         DiscordWebhook webhook = main.getWebhookManager().getWebhooks().get("order-create");
         if (webhook != null) {
-            String content = webhook.getContent()
+            DiscordWebhook clonedWebhook = webhook.clone();
+
+            String content = clonedWebhook.getContent()
                     .replace("%player%", order.getPlayerName());
 
-            webhook.setContent(content);
+            clonedWebhook.setContent(content);
 
-            for (DiscordWebhook.EmbedObject embed : webhook.getEmbeds()) {
+            for (DiscordWebhook.EmbedObject embed : clonedWebhook.getEmbeds()) {
                 embed.setDescription(embed.getDescription()
                         .replace("%player%", order.getPlayerName()));
                 embed.setTitle(embed.getTitle().replace("%material%", order.getMaterial().name()));
@@ -326,7 +329,7 @@ public class OrderManager {
             }
 
             try {
-                webhook.execute();
+                clonedWebhook.execute();
             } catch (IOException e) {
                 NLogger.error("An error occurred while sending order creation webhook: " + e.getMessage());
             }
@@ -387,7 +390,7 @@ public class OrderManager {
             ordersByPlayer.remove(order.getPlayerId());
         }
 
-       /*try (Connection conn = main.getDatabaseManager().getDataSource().getConnection();
+        try (Connection conn = main.getDatabaseManager().getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM orders WHERE order_id = ?")) {
 
             stmt.setString(1, order.getId());
@@ -396,7 +399,7 @@ public class OrderManager {
         } catch (SQLException e) {
             NLogger.error("Failed to remove order from database: " + e.getMessage());
             return false;
-        }*/
+        }
 
         return removed;
     }
@@ -431,8 +434,18 @@ public class OrderManager {
         if (!Settings.BROADCAST_ENABLED) return;
         if (totalPrice < Settings.BROADCAST_MIN_TOTAL_PRICE) return;
 
+        String playerName = order.getPlayerName();
+
+        if (playerName == null || playerName.isEmpty()) {
+            OfflinePlayer offlinePlayer = main.getServer().getOfflinePlayer(order.getPlayerId());
+            playerName = offlinePlayer.getName();
+            if (playerName == null) {
+                playerName = "";
+            }
+        }
+
         String message = LanguageLoader.getMessage("order-broadcast")
-                .replace("%player%", order.getPlayerName())
+                .replace("%player%", playerName)
                 .replace("%material%", StringUtil.formatMaterialName(order.getMaterial()))
                 .replace("%amount%", String.valueOf(order.getAmount()))
                 .replace("%price%", String.format("%.2f", order.getPrice()))
@@ -464,13 +477,11 @@ public class OrderManager {
             }
             main.getOrderLogger().logOrderExpired(order, refundAmount);
 
-            // Önce cache'den kaldır, sonra status'u ARCHIVED yap
             removeOrder(order);
 
             order.setStatus(OrderStatus.ARCHIVED);
             main.getOrderLogger().logOrderArchived(order);
 
-            // Database'de status'u güncelle
             updateOrderStatusInDatabase(order);
         }
 
