@@ -344,7 +344,7 @@ public class MainOrderMenu extends FastInv {
             case "new-order" -> {
                 player.closeInventory();
                 main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
-                    new NewOrderMenu().open((Player) player);
+                    main.getNewOrderMenuManager().getOrCreateMenu((Player) player).open((Player) player);
                 });
             }
             case "search-order" -> {

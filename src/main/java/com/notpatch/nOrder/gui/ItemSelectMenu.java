@@ -28,7 +28,7 @@ public class ItemSelectMenu extends FastInv {
     private final NewOrderMenu parentMenu;
     private int currentPage = 1;
     private final List<Material> availableItems;
-    private final List<ItemStack> customItems;
+    private List<ItemStack> customItems;
     private final List<Integer> itemSlots;
     private final int itemsPerPage;
     private String searchQuery = "";
@@ -43,7 +43,8 @@ public class ItemSelectMenu extends FastInv {
 
         this.availableItems = Settings.availableItems;
 
-        this.customItems = Settings.customItems;
+        // Don't store reference - will be refreshed in updateItems()
+        this.customItems = new ArrayList<>();
 
         List<String> slotsStr = config.getStringList("item-select-menu.item-slots");
         this.itemSlots = slotsStr.stream()
@@ -86,13 +87,15 @@ public class ItemSelectMenu extends FastInv {
     }
 
     private void updateItems() {
+        this.customItems = new ArrayList<>(Settings.customItems);
+
         for (int slot : itemSlots) {
             setItem(slot, null);
         }
 
         List<Object> allItems = new ArrayList<>(getFilteredItems());
 
-        if (Settings.ITEMSADDER_ENABLED && !customItems.isEmpty()) {
+        if (Settings.CUSTOM_ITEM_ENABLED && !customItems.isEmpty()) {
             allItems.addAll(getFilteredCustomItems());
         }
 
@@ -256,7 +259,7 @@ public class ItemSelectMenu extends FastInv {
         return customItems.stream()
                 .filter(item -> {
                     String displayName = ItemStackHelper.getItemDisplayName(item);
-                    String customId = main.getItemsAdderHook().getCustomItemId(item);
+                    String customId = main.getCustomItemManager().getCustomItemId(item);
 
                     return displayName.toLowerCase().contains(searchQuery.toLowerCase()) ||
                             (customId != null && customId.toLowerCase().contains(searchQuery.toLowerCase()));
@@ -272,7 +275,7 @@ public class ItemSelectMenu extends FastInv {
 
         if (template != null) {
             button.editMeta(meta -> {
-                String customId = main.getItemsAdderHook().getCustomItemId(customItem);
+                String customId = main.getCustomItemManager().getCustomItemId(customItem);
                 String displayName = ItemStackHelper.getItemDisplayName(customItem);
 
                 String name = ColorUtil.hexColor(template.getString("name", "&f%item_name%")

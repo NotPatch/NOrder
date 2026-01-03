@@ -326,15 +326,16 @@ public class NewOrderMenu extends FastInv implements Listener {
                 LocalDateTime expireAt = now.plusDays(PlayerUtil.getPlayerOrderExpiration(player));
                 String id = main.getOrderManager().createRandomId();
 
-                // Check if item is custom ItemsAdder item
                 String customItemId = null;
-                if (main.getItemsAdderHook() != null && main.getItemsAdderHook().isAvailable()) {
-                    customItemId = main.getItemsAdderHook().getCustomItemId(selectedItem);
+                if (main.getCustomItemManager() != null && main.getCustomItemManager().hasAnyProvider()) {
+                    customItemId = main.getCustomItemManager().getCustomItemId(selectedItem);
                 }
 
                 Order order = new Order(id, player.getUniqueId(), player.getName(), selectedItem, customItemId, quantity, pricePerItem, now, expireAt, isHighlighted);
 
                 NOrder.getInstance().getOrderManager().addOrder(order);
+
+                NOrder.getInstance().getNewOrderMenuManager().removeMenu(player);
 
                 player.closeInventory();
             }
@@ -346,7 +347,14 @@ public class NewOrderMenu extends FastInv implements Listener {
             int amount = Integer.parseInt(input);
             if (amount <= 0) {
                 player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("invalid-quantity")));
-                NOrder.getInstance().getChatInputManager().setAwaitingInput((Player) player, value -> {
+                NSound.error(player);
+
+                main.getMorePaperLib().scheduling().globalRegionalScheduler().runDelayed(() -> {
+                    this.open(player);
+                    player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("enter-quantity")));
+                }, 5L);
+
+                NOrder.getInstance().getChatInputManager().setAwaitingInput(player, value -> {
                     processQuantityInput(player, value);
                 });
                 return;
@@ -363,6 +371,16 @@ public class NewOrderMenu extends FastInv implements Listener {
 
         } catch (NumberFormatException e) {
             player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("invalid-quantity")));
+            NSound.error(player);
+
+            main.getMorePaperLib().scheduling().globalRegionalScheduler().runDelayed(() -> {
+                this.open(player);
+                player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("enter-quantity")));
+            }, 5L);
+
+            NOrder.getInstance().getChatInputManager().setAwaitingInput(player, value -> {
+                processQuantityInput(player, value);
+            });
         }
     }
 
@@ -377,7 +395,14 @@ public class NewOrderMenu extends FastInv implements Listener {
             if (price < minPrice) {
                 player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("price-too-low")
                         .replace("%min_price%", String.format("%.2f", minPrice))));
-                NOrder.getInstance().getChatInputManager().setAwaitingInput((Player) player, value -> {
+                NSound.error(player);
+
+                main.getMorePaperLib().scheduling().globalRegionalScheduler().runDelayed(() -> {
+                    this.open(player);
+                    player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("enter-price")));
+                }, 5L);
+
+                NOrder.getInstance().getChatInputManager().setAwaitingInput(player, value -> {
                     processPriceInput(player, value);
                 });
                 return;
@@ -386,7 +411,14 @@ public class NewOrderMenu extends FastInv implements Listener {
             if (price > maxPrice) {
                 player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("price-too-high")
                         .replace("%max_price%", String.format("%.2f", maxPrice))));
-                NOrder.getInstance().getChatInputManager().setAwaitingInput((Player) player, value -> {
+                NSound.error(player);
+
+                main.getMorePaperLib().scheduling().globalRegionalScheduler().runDelayed(() -> {
+                    this.open(player);
+                    player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("enter-price")));
+                }, 5L);
+
+                NOrder.getInstance().getChatInputManager().setAwaitingInput(player, value -> {
                     processPriceInput(player, value);
                 });
                 return;
@@ -403,6 +435,16 @@ public class NewOrderMenu extends FastInv implements Listener {
 
         } catch (NumberFormatException e) {
             player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("invalid-price")));
+            NSound.error(player);
+
+            main.getMorePaperLib().scheduling().globalRegionalScheduler().runDelayed(() -> {
+                this.open(player);
+                player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("enter-price")));
+            }, 5L);
+
+            NOrder.getInstance().getChatInputManager().setAwaitingInput(player, value -> {
+                processPriceInput(player, value);
+            });
         }
     }
 
