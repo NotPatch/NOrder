@@ -45,6 +45,23 @@ public class DiscordWebhook {
         this.embeds.add(embed);
     }
 
+    /**
+     * Creates a deep copy of this webhook
+     */
+    public DiscordWebhook clone() {
+        DiscordWebhook cloned = new DiscordWebhook(this.url);
+        cloned.setContent(this.content);
+        cloned.setUsername(this.username);
+        cloned.setAvatarUrl(this.avatarUrl);
+        cloned.setTts(this.tts);
+
+        for (EmbedObject embed : this.embeds) {
+            cloned.addEmbed(embed.clone());
+        }
+
+        return cloned;
+    }
+
     public void execute() throws IOException {
         if (this.content == null && this.embeds.isEmpty()) {
             throw new IllegalArgumentException("Set content or add at least one EmbedObject");
@@ -209,6 +226,36 @@ public class DiscordWebhook {
         public EmbedObject addField(String name, String value, boolean inline) {
             this.fields.add(new Field(name, value, inline));
             return this;
+        }
+
+        /**
+         * Creates a deep copy of this embed object
+         */
+        public EmbedObject clone() {
+            EmbedObject cloned = new EmbedObject();
+            cloned.title = this.title;
+            cloned.description = this.description;
+            cloned.url = this.url;
+            cloned.color = this.color;
+
+            if (this.footer != null) {
+                cloned.footer = new Footer(this.footer.text, this.footer.iconUrl);
+            }
+            if (this.thumbnail != null) {
+                cloned.thumbnail = new Thumbnail(this.thumbnail.url);
+            }
+            if (this.image != null) {
+                cloned.image = new Image(this.image.url);
+            }
+            if (this.author != null) {
+                cloned.author = new Author(this.author.name, this.author.url, this.author.iconUrl);
+            }
+
+            for (Field field : this.fields) {
+                cloned.fields.add(new Field(field.name, field.value, field.inline));
+            }
+
+            return cloned;
         }
 
         private static class Footer {
