@@ -1,7 +1,6 @@
 package com.notpatch.nOrder.hook;
 
 import com.notpatch.nOrder.NOrder;
-import com.notpatch.nOrder.Settings;
 import com.notpatch.nOrder.manager.OrderManager;
 import com.notpatch.nOrder.manager.PlayerStatisticsManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -19,11 +18,17 @@ public class PlaceholderHook extends PlaceholderExpansion {
 
     private final DateTimeFormatter dateTimeFormatter;
 
+    private final String DEFAULT_DATE_PATTERN = "dd-MM HH:mm:ss";
+
     public PlaceholderHook(NOrder main) {
         this.main = main;
         this.orderManager = main.getOrderManager();
         this.playerStatsManager = main.getPlayerStatsManager();
-        this.dateTimeFormatter = DateTimeFormatter.ofPattern(Settings.DATE_FORMAT);
+        String datePattern = main.getConfig().getString("date-format");
+        if (datePattern == null || datePattern.isEmpty()) {
+            datePattern = DEFAULT_DATE_PATTERN;
+        }
+        this.dateTimeFormatter = DateTimeFormatter.ofPattern(datePattern);
     }
 
     @Override
