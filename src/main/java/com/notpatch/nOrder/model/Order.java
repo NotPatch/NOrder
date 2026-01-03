@@ -2,6 +2,7 @@ package com.notpatch.nOrder.model;
 
 import lombok.Data;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.Duration;
@@ -57,6 +58,10 @@ public class Order {
         if (this.delivered < 0) {
             this.delivered = 0;
         }
+    }
+
+    public boolean isOwner(Player player) {
+        return this.playerId.equals(player.getUniqueId()) || this.playerName.equalsIgnoreCase(player.getName());
     }
 
     public boolean isExpired() {
