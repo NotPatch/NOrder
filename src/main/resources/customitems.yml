@@ -1,19 +1,32 @@
-# Custom Items Configuration for ItemsAdder Integration
+# Custom Items Configuration
 #
-# If you don't use ItemsAdder, you can ignore this file.
-# If you do use ItemsAdder, add your custom item namespace IDs here.
-# These items will appear in the order menu alongside vanilla items.
+# Supports: ItemsAdder, MMOItems, Nexo
+# Make sure custom-item-support is enabled in config.yml:
+# settings.custom-item-support: true
 #
-# Format: "namespace:item_id"
-# Example: "itemsadder:ruby" or "mypack:custom_sword"
+# Format Examples:
 #
-# Make sure ItemsAdder support is enabled in config.yml:
-# settings.itemsadder-support: true
+# ItemsAdder:
+#   - "itemsadder:namespace:item_id"  (with provider prefix)
+#   - "namespace:item_id"              (without provider prefix - will auto-detect)
+#
+# MMOItems:
+#   - "mmoitems:TYPE:ITEM_ID"         (with provider prefix)
+#   - "TYPE:ITEM_ID"                  (without provider prefix - will auto-detect)
+#
+# Nexo:
+#   - "nexo:item_id"                  (with provider prefix)
+#   - "item_id"                       (without provider prefix - will auto-detect)
 
 items:
-  - "itemsadder:ruby"
-  - "itemsadder:amethyst"
-  - "itemsadder:custom_sword"
-  # Add more custom items below:
-  # - "itemsadder:your_item_id"
-  # - "yournamespace:item_name"
+  # ItemsAdder Examples:
+  - "itemsadder:iasurvival:ruby"
+  - "iasurvival:amethyst"
+
+  # MMOItems Examples (uncomment if you use MMOItems):
+  # - "mmoitems:SWORD:FIRE_BLADE"
+  # - "MATERIAL:RUBY_GEM"
+
+  # Nexo Examples (uncomment if you use Nexo):
+  # - "nexo:magic_wand"
+  # - "dragon_sword"
