@@ -173,7 +173,7 @@ public class ItemStackHelper {
             }
 
             // Custom model data
-            if (section.contains("custom-model-data")) {
+            if (section.contains("custom-model-data") && section.isInt("custom-model-data")) {
                 int customModelData = section.getInt("custom-model-data");
                 meta.setCustomModelData(customModelData);
             }
