@@ -113,6 +113,7 @@ public final class NOrder extends JavaPlugin {
         playerStatsManager.loadStatistics();
 
         orderManager.startCleanupTask();
+        orderManager.startAutoSaveTask();
 
         languageLoader = new LanguageLoader();
         languageLoader.loadLangs();

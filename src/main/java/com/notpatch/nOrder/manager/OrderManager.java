@@ -544,4 +544,12 @@ public class OrderManager {
         );
     }
 
+    public void startAutoSaveTask() {
+        main.getMorePaperLib().scheduling().asyncScheduler().runAtFixedRate(
+                this::saveOrders,
+                Duration.ofMinutes(5),
+                Duration.ofMinutes(5)
+        );
+    }
+
 }

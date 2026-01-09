@@ -195,7 +195,6 @@ public class OrderDetailsMenu extends FastInv {
 
                     if (order.getRemaining() <= 0) {
                         order.setStatus(OrderStatus.COMPLETED);
-                        main.getOrderManager().updateOrderStatusInDatabase(order);
                         main.getOrderLogger().logOrderCompleted(order);
 
                         Player orderOwner = Bukkit.getPlayer(order.getPlayerId());
