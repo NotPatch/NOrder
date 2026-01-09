@@ -44,6 +44,8 @@ settings:
   max-price-per-item: 1000
   # MMOItems, ItemsAdder, Nexo Items support
   custom-item-support: true
+  # Auto-save interval in minutes (saves order data to database periodically)
+  auto-save-interval: 5
   # Broadcast settings for new orders
   broadcast:
     enabled: true

@@ -31,6 +31,9 @@ public class OrderManager {
     private final NOrder main;
 
     private final Map<UUID, List<Order>> ordersByPlayer = new ConcurrentHashMap<>();
+    
+    private Object cleanupTask;
+    private Object autoSaveTask;
 
     public OrderManager(NOrder main) {
         this.main = main;
@@ -536,7 +539,7 @@ public class OrderManager {
     }
 
     public void startCleanupTask() {
-        main.getMorePaperLib().scheduling().asyncScheduler().runAtFixedRate(
+        cleanupTask = main.getMorePaperLib().scheduling().asyncScheduler().runAtFixedRate(
                 this::cleanExpiredOrders,
                 Duration.ofMinutes(10),
 
@@ -545,11 +548,27 @@ public class OrderManager {
     }
 
     public void startAutoSaveTask() {
-        main.getMorePaperLib().scheduling().asyncScheduler().runAtFixedRate(
+        int intervalMinutes = Settings.AUTO_SAVE_INTERVAL_MINUTES;
+        if (intervalMinutes <= 0) {
+            NLogger.warn("Auto-save interval is disabled or invalid. Orders will only be saved on server shutdown.");
+            return;
+        }
+        
+        autoSaveTask = main.getMorePaperLib().scheduling().asyncScheduler().runAtFixedRate(
                 this::saveOrders,
-                Duration.ofMinutes(5),
-                Duration.ofMinutes(5)
+                Duration.ofMinutes(intervalMinutes),
+                Duration.ofMinutes(intervalMinutes)
         );
+        NLogger.info("Auto-save task started with " + intervalMinutes + " minute interval.");
+    }
+    
+    public void stopTasks() {
+        if (cleanupTask != null) {
+            main.getMorePaperLib().scheduling().cancelGlobalTasks();
+        }
+        if (autoSaveTask != null) {
+            main.getMorePaperLib().scheduling().cancelGlobalTasks();
+        }
     }
 
 }

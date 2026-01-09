@@ -52,6 +52,8 @@ public class Settings {
     public static boolean BROADCAST_ENABLED;
     public static double BROADCAST_MIN_TOTAL_PRICE;
 
+    public static int AUTO_SAVE_INTERVAL_MINUTES;
+
     public static boolean CUSTOM_ITEM_ENABLED;
     public static List<ItemStack> customItems = new ArrayList<>();
     public static Map<String, ItemStack> customItemsCache = new HashMap<>();
@@ -108,6 +110,8 @@ public class Settings {
 
         BROADCAST_ENABLED = config.getBoolean("settings.broadcast.enabled", true);
         BROADCAST_MIN_TOTAL_PRICE = config.getDouble("settings.broadcast.min-total-price", 1000);
+
+        AUTO_SAVE_INTERVAL_MINUTES = config.getInt("settings.auto-save-interval", 5);
 
         CUSTOM_ITEM_ENABLED = config.getBoolean("settings.custom-item-support", true);
 
