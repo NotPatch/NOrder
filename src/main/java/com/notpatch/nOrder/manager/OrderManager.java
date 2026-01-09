@@ -404,7 +404,7 @@ public class OrderManager {
         return removed;
     }
 
-    public void updateOrderStatusInDatabase(Order order) {
+    private void updateOrderStatusInDatabase(Order order) {
         String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
 
         try (Connection conn = main.getDatabaseManager().getDataSource().getConnection();
