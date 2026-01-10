@@ -1,5 +1,5 @@
 {
-  "version": "1.3.2",
-  "message": "Fixed Discord webhook duplicate message issue\n- Added Nexo and ItemsAdder support\n- Fixes bugs\n- Added debug mode (config.yml)",
+  "version": "1.3.3",
+  "message": "- Fixed some bugs\n- General improvements\n- Added Auto Save feature",
   "critical": false
 }
