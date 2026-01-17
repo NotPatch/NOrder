@@ -8,6 +8,7 @@ import com.notpatch.nOrder.model.OrderStatus;
 import com.notpatch.nOrder.util.NumberFormatter;
 import com.notpatch.nOrder.util.StringUtil;
 import com.notpatch.nlib.effect.NSound;
+import com.notpatch.nlib.util.ColorUtil;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -92,20 +93,25 @@ public class OrderAdminCommand implements BasicCommand {
                 NSound.success(player);
             }
 
-            sender.sendMessage(Component.text("═══════════ Order Info ═══════════", NamedTextColor.GOLD));
-            sender.sendMessage(Component.text("ID: ", NamedTextColor.GRAY).append(Component.text(order.getId(), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("Owner: ", NamedTextColor.GRAY).append(Component.text(order.getPlayerName(), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("Item: ", NamedTextColor.GRAY).append(Component.text(StringUtil.formatMaterialName(order.getMaterial()), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("Amount: ", NamedTextColor.GRAY).append(Component.text(order.getAmount(), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("Price per item: ", NamedTextColor.GRAY).append(Component.text(NumberFormatter.format(order.getPrice()), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("Total Price: ", NamedTextColor.GRAY).append(Component.text(NumberFormatter.format(order.getPrice() * order.getAmount()), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("Status: ", NamedTextColor.GRAY).append(Component.text(order.getStatus().name(), getStatusColor(order.getStatus()))));
-            sender.sendMessage(Component.text("Delivered: ", NamedTextColor.GRAY).append(Component.text(order.getDelivered() + "/" + order.getAmount(), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("Collected: ", NamedTextColor.GRAY).append(Component.text(order.getCollected() + "/" + order.getDelivered(), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("Highlight: ", NamedTextColor.GRAY).append(Component.text(order.isHighlight() ? "Yes" : "No", order.isHighlight() ? NamedTextColor.GREEN : NamedTextColor.RED)));
-            sender.sendMessage(Component.text("Created: ", NamedTextColor.GRAY).append(Component.text(order.getCreatedAt().format(formatter), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("Expires: ", NamedTextColor.GRAY).append(Component.text(order.getExpirationDate().format(formatter), NamedTextColor.WHITE)));
-            sender.sendMessage(Component.text("═══════════════════════════════════", NamedTextColor.GOLD));
+            List<String> infoLore = LanguageLoader.getMessageList(("admin-info-lore"));
+
+            for (String line : infoLore) {
+                String formatted = line
+                        .replace("%id%", order.getId())
+                        .replace("%owner%", order.getPlayerName())
+                        .replace("%item%", StringUtil.formatMaterialName(order.getMaterial()))
+                        .replace("%amount%", String.valueOf(order.getAmount()))
+                        .replace("%price%", NumberFormatter.format(order.getPrice()))
+                        .replace("%total_price%", NumberFormatter.format(order.getPrice() * order.getAmount()))
+                        .replace("%status%", order.getStatus().name())
+                        .replace("%delivered%", String.valueOf(order.getDelivered()))
+                        .replace("%collected%", String.valueOf(order.getCollected()))
+                        .replace("%highlight%", order.isHighlight() ? LanguageLoader.getMessage("highlighted-yes") : LanguageLoader.getMessage("highlighted-no"))
+                        .replace("%created%", order.getCreatedAt().format(formatter))
+                        .replace("%expires%", order.getExpirationDate().format(formatter));
+
+                sender.sendMessage(ColorUtil.hexColor(formatted));
+            }
 
             Component actions = Component.text("[Delete]", NamedTextColor.RED)
                     .hoverEvent(HoverEvent.showText(Component.text("Click to delete order")))
@@ -148,30 +154,6 @@ public class OrderAdminCommand implements BasicCommand {
             }
             return;
         }
-
-        sender.sendMessage(Component.text("═══════ Orders by " + playerName + " ═══════", NamedTextColor.GOLD));
-
-        int count = 0;
-        for (Order order : playerOrders) {
-            if (count >= limit) break;
-
-            Component orderEntry = Component.text("• ", NamedTextColor.GRAY)
-                    .append(Component.text(order.getId(), NamedTextColor.AQUA)
-                            .hoverEvent(HoverEvent.showText(Component.text("Click to view details")))
-                            .clickEvent(ClickEvent.runCommand("/orderadmin info " + order.getId())))
-                    .append(Component.text(" | ", NamedTextColor.GRAY))
-                    .append(Component.text(StringUtil.formatMaterialName(order.getMaterial()), NamedTextColor.WHITE))
-                    .append(Component.text(" | ", NamedTextColor.GRAY))
-                    .append(Component.text(order.getDelivered() + "/" + order.getAmount(), NamedTextColor.YELLOW))
-                    .append(Component.text(" | ", NamedTextColor.GRAY))
-                    .append(Component.text(order.getStatus().name(), getStatusColor(order.getStatus())));
-
-            sender.sendMessage(orderEntry);
-            count++;
-        }
-
-        sender.sendMessage(Component.text("═══════════════════════════════════", NamedTextColor.GOLD));
-
 
         if (entity instanceof Player player) {
             NSound.success(player);
