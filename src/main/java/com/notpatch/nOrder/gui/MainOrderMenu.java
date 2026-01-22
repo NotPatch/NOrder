@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
@@ -255,7 +256,11 @@ public class MainOrderMenu extends FastInv {
             if (orderItem != null) {
                 ItemMeta meta = orderItem.getItemMeta();
                 if (meta != null) {
-                    enchantments = meta.getEnchants();
+                    if (orderItem.getType() == Material.ENCHANTED_BOOK && meta instanceof EnchantmentStorageMeta storageMeta) {
+                        enchantments = storageMeta.getStoredEnchants();
+                    } else {
+                        enchantments = meta.getEnchants();
+                    }
                 }
             }
         }
