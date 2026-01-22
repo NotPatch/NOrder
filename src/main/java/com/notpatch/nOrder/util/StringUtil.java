@@ -1,6 +1,7 @@
 package com.notpatch.nOrder.util;
 
 import com.notpatch.nOrder.LanguageLoader;
+import com.notpatch.nOrder.NOrder;
 import com.notpatch.nOrder.Settings;
 import com.notpatch.nOrder.model.Order;
 import com.notpatch.nOrder.model.ProgressBar;
@@ -32,9 +33,12 @@ public class StringUtil {
             text = PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(order.getPlayerId()), text);
         }
 
+        // Get item display name - use custom item name if available, otherwise format material name
+        String itemDisplayName = getItemDisplayName(order);
+
         return text
-                .replace("%item%", formatMaterialName(order.getMaterial()))
-                .replace("%material%", formatMaterialName(order.getMaterial()))
+                .replace("%item%", itemDisplayName)
+                .replace("%material%", itemDisplayName)
                 .replace("%quantity%", String.valueOf(order.getAmount()))
                 .replace("%highlighted%", order.isHighlight() ? LanguageLoader.getMessage("highlighted-yes") : LanguageLoader.getMessage("highlighted-no"))
                 .replace("%amount%", String.valueOf(order.getAmount()))
@@ -61,5 +65,21 @@ public class StringUtil {
             builder.append(' ');
         }
         return builder.toString().trim();
+    }
+
+    /**
+     * Gets the display name for an order's item.
+     * For custom items (MMOItems, ItemsAdder, Nexo), returns the custom item display name.
+     * For vanilla items, returns the formatted material name.
+     */
+    private static String getItemDisplayName(Order order) {
+        if (order.isCustomItem() && NOrder.getInstance().getCustomItemManager() != null) {
+            String customName = NOrder.getInstance().getCustomItemManager().getCustomItemDisplayName(order.getItem());
+            if (customName != null && !customName.isEmpty()) {
+                // Strip color codes for plain text representation if needed
+                return customName;
+            }
+        }
+        return formatMaterialName(order.getMaterial());
     }
 }
