@@ -46,6 +46,7 @@ public class StringUtil {
                 .replace("%quantity%", String.valueOf(order.getAmount()))
                 .replace("%highlighted%", order.isHighlight() ? LanguageLoader.getMessage("highlighted-yes") : LanguageLoader.getMessage("highlighted-no"))
                 .replace("%amount%", String.valueOf(order.getAmount()))
+                .replace("%status%", order.getStatus().name())
                 .replace("%delivered%", String.valueOf(order.getDelivered()))
                 .replace("%remaining%", String.valueOf(order.getRemaining()))
                 .replace("%price%", NumberFormatter.format(order.getPrice()))
