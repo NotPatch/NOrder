@@ -1,8 +1,11 @@
 package com.notpatch.nOrder.util;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.common.collect.ArrayListMultimap;
 import com.notpatch.nOrder.NOrder;
 import com.notpatch.nlib.util.ColorUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -10,10 +13,12 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ItemStackHelper {
 
@@ -224,6 +229,19 @@ public class ItemStackHelper {
             } catch (IllegalArgumentException ignored) {
             }
         });
+
+
+        if ((material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) && section.contains("texture")) {
+            String texture = section.getString("texture");
+            item.editMeta(SkullMeta.class, skullMeta -> {
+                UUID uuid = UUID.randomUUID();
+                PlayerProfile profile = Bukkit.createProfile(uuid, uuid.toString().substring(0, 16));
+                profile.setProperty(new ProfileProperty("textures", texture));
+                skullMeta.setPlayerProfile(profile);
+            });
+        }
+
+
 
         return item;
     }
