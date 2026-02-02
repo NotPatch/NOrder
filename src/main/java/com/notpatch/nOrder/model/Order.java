@@ -26,6 +26,8 @@ public class Order {
     private final boolean highlight;
     private OrderStatus status;
 
+    private volatile boolean processing = false;
+
     public boolean isCustomItem() {
         return customItemId != null && !customItemId.isEmpty();
     }
@@ -70,6 +72,22 @@ public class Order {
 
     public long getRemainingHours() {
         return Duration.between(LocalDateTime.now(), expirationDate).toHours();
+    }
+
+    public boolean tryLock() {
+        synchronized (this) {
+            if (processing) {
+                return false;
+            }
+            processing = true;
+            return true;
+        }
+    }
+
+    public void unlock() {
+        synchronized (this) {
+            processing = false;
+        }
     }
 
 }
