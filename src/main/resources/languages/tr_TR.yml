@@ -34,6 +34,7 @@ delivery-completed: "&a✓ %material% siparişiniz tamamen teslim edildi!"
 delivery-wrong-item: "&cBu sipariş için sadece &f%material% &cteslim edebilirsiniz!"
 delivery-excess-items: "&7Fazla &c%amount% &7eşya geri verildi."
 order-not-active: "&cBu sipariş artık aktif değil!"
+order-processing: "&cBu sipariş şu anda işleniyor! Lütfen birazdan tekrar deneyin."
 
 # Order Owner Notifications
 order-progress: "&a%player% tarafından &f%amount% &aadet &f%material% teslim edildi, siparişiniz güncellendi."

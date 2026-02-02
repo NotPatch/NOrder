@@ -34,6 +34,7 @@ delivery-completed: "&a✓ Your order %material% has been fully delivered!"
 delivery-wrong-item: "&cYou can only deliver &f%material% &cfor this order!"
 delivery-excess-items: "&7Returned &c%amount% &7excess items."
 order-not-active: "&cThis order is no longer active!"
+order-processing: "&cThis order is currently being processed! Please try again in a moment."
 
 # Order Owner Notifications
 order-progress: "&aYour order for &f%material% &ahas received a delivery of &f%amount% &aitems by &f%player%"
