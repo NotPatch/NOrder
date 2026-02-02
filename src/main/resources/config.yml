@@ -16,6 +16,7 @@ lang: en_US
 
 permissions:
   order: norder.use
+  order-cancel: norder.cancel
   order-menu: norder.menu
   order-admin: norder.admin
   # norder.limit.<number> | default 5
