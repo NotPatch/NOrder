@@ -238,6 +238,9 @@ public class OrderAdminCommand implements BasicCommand {
         if (main.getDynamicMenuManager() != null) {
             main.getDynamicMenuManager().loadMenus();
         }
+        if (main.getNewOrderMenuManager() != null) {
+            main.getNewOrderMenuManager().clearAll();
+        }
         sender.sendMessage("§aConfigurations reloaded.");
     }
 
