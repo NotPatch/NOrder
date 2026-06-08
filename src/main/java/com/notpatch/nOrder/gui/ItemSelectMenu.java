@@ -144,10 +144,7 @@ public class ItemSelectMenu extends FastInv {
                             e -> handleAction("previous-page", (Player) e.getWhoClicked()));
                 } else {
                     setItem(previousSection.getInt("slot"),
-                            ItemStackHelper.builder()
-                                    .material(previousButton.getType())
-                                    .displayName(ColorUtil.hexColor("&8Previous Page"))
-                                    .build());
+                            ItemStackHelper.resetLore(previousButton));
                 }
             }
 
@@ -159,10 +156,7 @@ public class ItemSelectMenu extends FastInv {
                             e -> handleAction("next-page", (Player) e.getWhoClicked()));
                 } else {
                     setItem(nextSection.getInt("slot"),
-                            ItemStackHelper.builder()
-                                    .material(nextButton.getType())
-                                    .displayName(ColorUtil.hexColor("&8Next Page"))
-                                    .build());
+                            ItemStackHelper.resetLore(nextButton));
                 }
             }
         }
