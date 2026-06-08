@@ -154,6 +154,17 @@ public class ItemStackHelper {
         return result.toString().trim();
     }
 
+    public static ItemStack resetLore(ItemStack item) {
+        if (item == null) return item;
+        item.editMeta(meta -> {
+            if (meta.hasLore()) {
+                meta.lore().clear();
+            }
+
+        });
+        return item;
+    }
+
     /**
      * Creates an ItemStack from a configuration section.
      * Supports: material, name, lore, amount, glow, item-flags, custom-model-data
