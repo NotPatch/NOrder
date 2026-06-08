@@ -109,6 +109,11 @@ public final class NOrder extends JavaPlugin {
 
         orderLogger = new OrderLogger(this);
 
+        languageLoader = new LanguageLoader();
+        languageLoader.loadLangs();
+
+        Settings.loadSettings();
+
         orderManager = new OrderManager(this);
         orderManager.loadOrders();
 
@@ -118,15 +123,11 @@ public final class NOrder extends JavaPlugin {
         orderManager.startCleanupTask();
         orderManager.startAutoSaveTask();
 
-        languageLoader = new LanguageLoader();
-        languageLoader.loadLangs();
-
         webhookManager = new WebhookManager(this);
         webhookManager.loadWebhooks();
 
         compatibility.validate();
 
-        Settings.loadSettings();
 
         customItemManager = new CustomItemManager();
 
