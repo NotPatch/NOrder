@@ -221,7 +221,8 @@ public class NewOrderMenu extends FastInv implements Listener {
                             .replace("%item%", selectedItem != null ? selectedItem.getType().name() : "None")
                             .replace("%quantity%", String.valueOf(quantity))
                             .replace("%price%", String.format("%.2f", pricePerItem))
-                            .replace("%total_price%", String.format("%.2f", finalTotalPrice)))
+                            .replace("%total_price%", String.format("%.2f", finalTotalPrice))
+                            .replace("%highlighted%", isHighlighted ? LanguageLoader.getMessage("highlighted-yes") : LanguageLoader.getMessage("highlighted-no")))
                     .map(ColorUtil::hexColor)
                     .collect(Collectors.toList());
 
@@ -261,6 +262,7 @@ public class NewOrderMenu extends FastInv implements Listener {
                 new ItemSelectMenu(this).open(player);
             }
             case "set-quantity" -> {
+                closedByAction = true;
                 player.closeInventory();
                 player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("enter-quantity")));
                 NOrder.getInstance().getChatInputManager().setAwaitingInput((Player) player, value -> {
@@ -269,6 +271,7 @@ public class NewOrderMenu extends FastInv implements Listener {
 
             }
             case "set-price" -> {
+                closedByAction = true;
                 player.closeInventory();
                 player.sendMessage(ColorUtil.hexColor(LanguageLoader.getMessage("enter-price")));
                 NOrder.getInstance().getChatInputManager().setAwaitingInput((Player) player, value -> {
@@ -469,13 +472,18 @@ public class NewOrderMenu extends FastInv implements Listener {
         super.onClose(event);
         HumanEntity entity = event.getPlayer();
         Player player = (Player) entity;
-        NOrder.getInstance().getChatInputManager().cancelInput(player);
 
         if (closedByAction) return;
         if (!backOnClose) return;
         if (parentMenuId == null || parentMenuId.isEmpty()) return;
 
-        main.getDynamicMenuManager().openMenuById(player, parentMenuId);
+        if (!NOrder.getInstance().getChatInputManager().isAwaitingInput(player)) {
+            main.getDynamicMenuManager().openMenuById(player, parentMenuId);
+        }
+
+        NOrder.getInstance().getChatInputManager().cancelInput(player);
+
+
     }
 
     @Override
