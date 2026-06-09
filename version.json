@@ -1,5 +1,5 @@
 {
-  "version": "1.3.9",
-  "message": "\n- Added options for customizing the appearance of the UI.\n- Added back on close option for menus \n- Improved performance and fixed minor bugs.",
+  "version": "1.4.0",
+  "message": "\n- Fixed some menu bugs\n- Improved performance\n - Fixed username change bug",
   "critical": false
 }

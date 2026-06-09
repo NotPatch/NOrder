@@ -113,8 +113,11 @@ public class MainOrderMenu extends FastInv {
                             .contains(filterValue.toLowerCase()))
                     .toList();
             case "player" -> orders.stream()
-                    .filter(order -> order.getPlayerName().toLowerCase()
-                            .contains(filterValue.toLowerCase()))
+                    .filter(order -> {
+                        String playerName = order.getPlayerName();
+                        return playerName != null && playerName.toLowerCase()
+                                .contains(filterValue.toLowerCase());
+                    })
                     .toList();
             default -> orders;
         };
@@ -366,19 +369,18 @@ public class MainOrderMenu extends FastInv {
     }
 
 
-
-    private void handleOrderClick(Order order, HumanEntity player) {
+    private void handleOrderClick(Order order, HumanEntity hPlayer) {
         closedByAction = true;
         player.closeInventory();
-        if (order.getPlayerId() == player.getUniqueId() || order.getPlayerName().equalsIgnoreCase(player.getName())) {
+        if (order.isOwner(player)) {
             main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
-                new OrderTakeMenu(order).open((Player) player);
+                new OrderTakeMenu(order).open(player);
             });
 
             return;
         }
         main.getMorePaperLib().scheduling().globalRegionalScheduler().run(() -> {
-            new OrderDetailsMenu(order).open((Player) player);
+            new OrderDetailsMenu(order).open(player);
         });
     }
 

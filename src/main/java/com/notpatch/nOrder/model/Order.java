@@ -14,6 +14,7 @@ public class Order {
 
     private final String id;
     private final UUID playerId;
+    @Deprecated
     private final String playerName;
     private final ItemStack item;
     private final String customItemId;
@@ -63,7 +64,7 @@ public class Order {
     }
 
     public boolean isOwner(Player player) {
-        return this.playerId.equals(player.getUniqueId()) || this.playerName.equalsIgnoreCase(player.getName());
+        return this.playerId.equals(player.getUniqueId());
     }
 
     public boolean isExpired() {

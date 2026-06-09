@@ -198,11 +198,12 @@ public class OrderManager {
     }
 
     public List<Order> getPlayerOrders(String playerName) {
-        return ordersByPlayer.values().stream()
-                .filter(orders -> !orders.isEmpty() &&
-                        orders.getFirst().getPlayerName().equalsIgnoreCase(playerName) && orders.getFirst().getStatus() == OrderStatus.ACTIVE)
-                .findFirst()
-                .orElse(new ArrayList<>());
+        OfflinePlayer offlinePlayer = main.getServer().getOfflinePlayer(playerName);
+        UUID playerId = offlinePlayer.getUniqueId();
+        return ordersByPlayer.computeIfAbsent(playerId, k -> new ArrayList<>())
+                .stream()
+                .filter(order -> order.getStatus() == OrderStatus.ACTIVE)
+                .collect(Collectors.toList());
     }
 
     public List<Order> getPlayerOrdersIncludingCompleted(UUID playerId) {
@@ -210,14 +211,12 @@ public class OrderManager {
     }
 
     public List<Order> getPlayerOrdersIncludingCompleted(String playerName) {
-        return ordersByPlayer.values().stream()
-                .filter(orders -> !orders.isEmpty() &&
-                        orders.getFirst().getPlayerName().equalsIgnoreCase(playerName))
-                .findFirst()
-                .map(orders -> orders.stream()
-                        .filter(order -> order.getStatus() != OrderStatus.CANCELLED)
-                        .collect(Collectors.toList()))
-                .orElse(new ArrayList<>());
+        OfflinePlayer offlinePlayer = main.getServer().getOfflinePlayer(playerName);
+        UUID playerId = offlinePlayer.getUniqueId();
+        return ordersByPlayer.computeIfAbsent(playerId, k -> new ArrayList<>())
+                .stream()
+                .filter(order -> order.getStatus() != OrderStatus.CANCELLED)
+                .collect(Collectors.toList());
     }
 
     public List<Order> getOrdersByMaterial(String material) {

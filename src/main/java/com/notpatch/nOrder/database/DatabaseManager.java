@@ -9,6 +9,7 @@ import org.bukkit.configuration.Configuration;
 
 import java.io.File;
 import java.sql.*;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -240,6 +241,27 @@ public class DatabaseManager {
         }
     }
 
+    public void updatePlayerName(UUID playerId, String newName) {
+        String sql = "UPDATE orders SET player_name = ? WHERE player_id = ?";
+        String sqlStats = "UPDATE player_stats SET player_name = ? WHERE player_id = ?";
+
+        executor.submit(() -> {
+            try (Connection conn = dataSource.getConnection()) {
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setString(1, newName);
+                    stmt.setString(2, playerId.toString());
+                    stmt.executeUpdate();
+                }
+                try (PreparedStatement stmt = conn.prepareStatement(sqlStats)) {
+                    stmt.setString(1, newName);
+                    stmt.setString(2, playerId.toString());
+                    stmt.executeUpdate();
+                }
+            } catch (SQLException e) {
+                NLogger.warn("Failed to update player name: " + e.getMessage());
+            }
+        });
+    }
 
     private boolean columnExists(Connection conn, String tableName, String columnName) {
         try {

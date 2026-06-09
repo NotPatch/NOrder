@@ -16,6 +16,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -25,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class OrderAdminCommand implements BasicCommand {
@@ -145,7 +147,10 @@ public class OrderAdminCommand implements BasicCommand {
 
 
     private void handlePlayerCommand(CommandSender sender, Entity entity, String playerName, int limit) {
-        List<Order> playerOrders = NOrder.getInstance().getOrderManager().getPlayerOrdersIncludingCompleted(playerName);
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+        UUID playerId = offlinePlayer.getUniqueId();
+
+        List<Order> playerOrders = NOrder.getInstance().getOrderManager().getPlayerOrdersIncludingCompleted(playerId);
 
         if (playerOrders.isEmpty()) {
             sender.sendMessage(LanguageLoader.getMessage("player-no-orders").replace("%player%", playerName));
