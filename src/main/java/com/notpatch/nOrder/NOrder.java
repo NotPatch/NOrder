@@ -8,6 +8,7 @@ import com.notpatch.nOrder.hook.LuckPermsHook;
 import com.notpatch.nOrder.hook.Metrics;
 import com.notpatch.nOrder.hook.PlaceholderHook;
 import com.notpatch.nOrder.listener.ChatInputListener;
+import com.notpatch.nOrder.listener.PlayerJoinListener;
 import com.notpatch.nOrder.manager.*;
 import com.notpatch.nlib.NLib;
 import com.notpatch.nlib.compatibility.NCompatibility;
@@ -139,6 +140,7 @@ public final class NOrder extends JavaPlugin {
         newOrderMenuManager = new NewOrderMenuManager();
 
         getServer().getPluginManager().registerEvents(new NewOrderMenu(), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 
         registerCommand("order", Settings.ORDER_ALIASES, new OrderCommand());
         registerCommand("orderadmin", Settings.ORDER_ADMIN_ALIASES, new OrderAdminCommand());
