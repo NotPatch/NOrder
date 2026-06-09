@@ -110,7 +110,7 @@ public class YourOrdersMenu extends FastInv {
     }
 
     private void loadPlayerOrders() {
-        List<Order> playerOrders = main.getOrderManager().getPlayerOrdersIncludingCompleted(player.getName());
+        List<Order> playerOrders = main.getOrderManager().getPlayerOrdersIncludingCompleted(player.getUniqueId());
 
         int startIndex = (currentPage - 1) * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, playerOrders.size());
@@ -339,7 +339,7 @@ public class YourOrdersMenu extends FastInv {
                 });
                 break;
             case "next-page":
-                if (currentPage < Math.ceil((double) main.getOrderManager().getPlayerOrders(player.getName()).size() / itemsPerPage)) {
+                if (currentPage < Math.ceil((double) main.getOrderManager().getPlayerOrders(player.getUniqueId()).size() / itemsPerPage)) {
                     closedByAction = true;
                     player.closeInventory();
                     new YourOrdersMenu((Player) player, currentPage + 1).open((Player) player);
