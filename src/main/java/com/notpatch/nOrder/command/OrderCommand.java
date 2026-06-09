@@ -13,7 +13,9 @@ import com.notpatch.nlib.util.ColorUtil;
 import com.notpatch.nlib.util.NLogger;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -56,7 +58,8 @@ public class OrderCommand implements BasicCommand {
                     }
                 }
                 if (split[0].equalsIgnoreCase("player")) {
-                    List<Order> orders = NOrder.getInstance().getOrderManager().getPlayerOrders(split[1]);
+                    OfflinePlayer targetPlayer = Bukkit.getOfflinePlayer(split[1]);
+                    List<Order> orders = NOrder.getInstance().getOrderManager().getPlayerOrders(targetPlayer.getUniqueId());
                     if (orders != null) {
                         new MainOrderMenu(orders).open(player);
                         NSound.click(player);
