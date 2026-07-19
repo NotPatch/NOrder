@@ -158,18 +158,24 @@ public class OrderTakeMenu extends FastInv {
         if (e.isLeftClick()) {
             HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(clickedItem.clone());
 
-            if (leftover.isEmpty()) {
-                getInventory().setItem(clickedSlot, null);
+            int leftoverAmount = 0;
+            for (ItemStack remaining : leftover.values()) {
+                leftoverAmount += remaining.getAmount();
+            }
+            int addedAmount = itemAmount - leftoverAmount;
 
-                order.addCollected(itemAmount);
-                main.getOrderLogger().logItemCollection(order, itemAmount);
+            if (addedAmount > 0) {
+                order.addCollected(addedAmount);
+                main.getOrderLogger().logItemCollection(order, addedAmount);
 
                 NSound.success(player);
                 checkAndArchiveOrder(player);
 
                 updateInfoItem();
                 loadDeliveredItems();
-            } else {
+            }
+
+            if (leftoverAmount > 0) {
                 player.sendMessage(LanguageLoader.getMessage("inventory-full"));
                 NSound.error(player);
             }
@@ -259,6 +265,7 @@ public class OrderTakeMenu extends FastInv {
     @Override
     protected void onClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
+        event.setCancelled(true);
         if (event.getCursor().getType() != Material.AIR) {
             NSound.click(player);
         }
