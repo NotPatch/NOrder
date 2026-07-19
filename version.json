@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
-  "message": "\n- Fixed some menu bugs\n- Improved performance\n - Fixed username change bug",
-  "critical": false
+  "version": "1.4.1",
+  "message": "\n- Fixed dupe update ASAP",
+  "critical": true
 }
