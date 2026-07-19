@@ -110,9 +110,9 @@ blacklist-items:
 # Per-item price overrides
 # If no information is provided for an item, it uses the overall min/max values from settings
 per-item-price:
-  SHULKER_BOX:
-    min-price-per-item: 20
-    max-price-per-item: 100
-  DIAMOND:
-    min-price-per-item: 10
-    max-price-per-item: 500
+  # SHULKER_BOX:
+  #   min-price-per-item: 20
+  #   max-price-per-item: 100
+  # DIAMOND:
+  #   min-price-per-item: 10
+  #   max-price-per-item: 500
