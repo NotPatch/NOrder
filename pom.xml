@@ -6,7 +6,7 @@
 
     <groupId>com.notpatch</groupId>
     <artifactId>NOrder</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <packaging>jar</packaging>
 
     <name>NOrder</name>
@@ -26,6 +26,13 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.46</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
@@ -118,13 +125,13 @@
         <dependency>
             <groupId>com.github.notpatch</groupId>
             <artifactId>NLib</artifactId>
-            <version>1.4.8</version>
+            <version>1.5.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.34</version>
+            <version>1.18.46</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
