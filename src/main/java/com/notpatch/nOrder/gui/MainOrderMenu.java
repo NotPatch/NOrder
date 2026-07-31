@@ -160,6 +160,7 @@ public class MainOrderMenu extends FastInv {
 
         String sortName = LanguageLoader.getMessage("sort-type-" + sortType.name().toLowerCase().replace("_", "-"));
         String itemName = ColorUtil.hexColor(sortSection.getString("name", "&f&lSort").replace("%sort_type%", sortName));
+        int customModelData = sortSection.getInt("custom-model-data", 0);
         List<String> lore = sortSection.getStringList("lore").stream()
                 .map(line -> ColorUtil.hexColor(line.replace("%sort_type%", sortName)))
                 .collect(Collectors.toList());
@@ -168,6 +169,7 @@ public class MainOrderMenu extends FastInv {
                 .material(material)
                 .displayName(itemName)
                 .lore(lore)
+                .customModelData(customModelData)
                 .build();
 
         setItem(slot, sortItem, e -> handleMenuAction("sort-orders", e.getWhoClicked()));
