@@ -1,5 +1,5 @@
 {
-  "version": "1.4.1",
-  "message": "\n- Fixed dupe update ASAP",
-  "critical": true
+  "version": "1.4.2",
+  "message": "\n- Added 26.2 support.",
+  "critical": false
 }
