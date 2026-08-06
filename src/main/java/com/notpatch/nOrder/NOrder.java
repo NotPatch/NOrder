@@ -18,6 +18,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class NOrder extends JavaPlugin {
 
     @Getter
@@ -77,7 +78,7 @@ public final class NOrder extends JavaPlugin {
         NCompatibility compatibility = new NCompatibility();
         compatibility.
                 checkBukkit("Paper", "Purpur", "Leaf", "Folia")
-                .checkVersion("1.21.4", "1.21.10")
+                .checkVersion("1.21.4", "0.26.2")
                 .checkPlugin("PlaceholderAPI", false)
                 .onSuccess(() -> {
                     new PlaceholderHook(this).register();

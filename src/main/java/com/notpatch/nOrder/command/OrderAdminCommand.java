@@ -20,6 +20,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.time.format.DateTimeFormatter;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("UnstableApiUsage") // Removes the api status experimental warnings
 public class OrderAdminCommand implements BasicCommand {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -184,7 +186,7 @@ public class OrderAdminCommand implements BasicCommand {
     }
 
     @Override
-    public Collection<String> suggest(CommandSourceStack commandSourceStack, String[] args) {
+    public @NonNull Collection<String> suggest(@NonNull CommandSourceStack commandSourceStack, String[] args) {
 
         List<String> suggestions = List.of("reload", "info", "delete", "player");
 

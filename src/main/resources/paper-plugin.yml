@@ -1,5 +1,5 @@
 name: NOrder
-version: ${project.version}
+version: ${version}
 main: com.notpatch.nOrder.NOrder
 api-version: '1.21'
 folia-supported: true
