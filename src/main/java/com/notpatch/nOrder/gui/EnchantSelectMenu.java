@@ -5,6 +5,8 @@ import com.notpatch.nOrder.util.ItemStackHelper;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,13 +39,13 @@ public class EnchantSelectMenu extends FastInv {
         this.config = main.getConfigurationManager().getMenuConfiguration().getConfiguration();
 
         if (material == Material.ENCHANTED_BOOK) {
-            this.availableEnchants = Arrays.stream(Enchantment.values())
-                    .collect(Collectors.toList());
+            this.availableEnchants = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream()
+                    .toList();
         } else {
             ItemStack item = new ItemStack(material);
-            this.availableEnchants = Arrays.stream(Enchantment.values())
+            this.availableEnchants = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream()
                     .filter(enchantment -> enchantment.canEnchantItem(item))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         updateEnchantmentItems();

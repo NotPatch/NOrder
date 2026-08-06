@@ -18,6 +18,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class NOrder extends JavaPlugin {
 
     @Getter

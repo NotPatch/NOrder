@@ -7,10 +7,11 @@ import com.notpatch.nOrder.util.ItemStackHelper;
 import com.notpatch.nlib.effect.NSound;
 import com.notpatch.nlib.fastinv.FastInv;
 import com.notpatch.nlib.util.ColorUtil;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -202,7 +203,7 @@ public class ItemSelectMenu extends FastInv {
 
     private boolean canBeEnchanted(Material material) {
         ItemStack item = new ItemStack(material);
-        return Arrays.stream(Enchantment.values())
+        return RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream()
                 .anyMatch(enchantment -> enchantment.canEnchantItem(item));
     }
 

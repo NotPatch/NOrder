@@ -9,6 +9,7 @@ import lombok.Getter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,7 +26,7 @@ public class UpdateChecker {
 
         main.getMorePaperLib().scheduling().asyncScheduler().run(() -> {
             try {
-                URL url = new URL("https://raw.githubusercontent.com/NotPatch/NOrder/refs/heads/master/version.json");
+                URL url = new URI("https://raw.githubusercontent.com/NotPatch/NOrder/refs/heads/master/version.json").toURL();
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(5000);
@@ -57,7 +58,8 @@ public class UpdateChecker {
                     boolean critical = json.has("critical") &&
                             json.get("critical").getAsBoolean();
 
-                    String currentVersion = main.getDescription().getVersion().split("-")[0];
+                    @SuppressWarnings("UnstableApiUsage") // Removes the api status experimental warnings
+                    String currentVersion = main.getPluginMeta().getVersion().split("-")[0];
                     VersionComparison comparison = compareVersions(currentVersion, latestVersion);
 
                     UpdateInfo updateInfo = new UpdateInfo(currentVersion, latestVersion, message, critical, comparison);
